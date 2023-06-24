@@ -1,4 +1,4 @@
-const {Library} = require("../models")
+const {Library, Book} = require("../models")
 
 
 const createLibrary = async (library) => {
@@ -15,7 +15,7 @@ const createLibrary = async (library) => {
 
   const getOneLibrary = async (libraryId) => {
     try {
-      const libraryFound = await Library.findByPk(libraryId);
+      const libraryFound = await Library.findByPk(libraryId,  { include: {all: true} });
       return libraryFound;
     } catch (error) {
       console.log(`Error looking for library, ${error}`);
