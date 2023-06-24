@@ -13,8 +13,12 @@ const createLibrary = async (library) => {
   
 
 
-  const getOneLibrary = async (libraryId) => {
+  const getLibrary = async (libraryId) => {
     try {
+      if(!libraryId){
+        const librariesFound = await Library.findAll( { include: {all: true} });
+        return librariesFound;
+      }
       const libraryFound = await Library.findByPk(libraryId,  { include: {all: true} });
       return libraryFound;
     } catch (error) {
@@ -27,6 +31,6 @@ const createLibrary = async (library) => {
 
   module.exports ={
     createLibrary,
-    getOneLibrary
+    getLibrary
 
   }

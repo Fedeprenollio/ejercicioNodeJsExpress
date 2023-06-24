@@ -13,17 +13,19 @@ const createLibrary = async (req, res) => {
 };
 
 // ○ Obtener una librería
-const getOneLibrary = async (req, res) => {
+const getLibrary = async (req, res) => {
   const { libraryId } = req.params;
   try {
-    const libraryFound = await libraryService.getOneLibrary(libraryId);
+      //NOTA: le dejo al provider la decision de retornar una sola libreria o todas dependiendo si le llega o no un parametro a su función
+   const libraryFound = await libraryService.getLibrary(libraryId);
+
+
     if (!libraryFound) {
       return res
         .status(404)
         .json({ action: "get Library", error: "Library not found" });
-    }else{
+    } else {
       res.json(libraryFound);
-
     }
   } catch (error) {
     res.status(404).json({ action: "Get library", error: error.message });
@@ -36,4 +38,4 @@ const getOneLibrary = async (req, res) => {
 // ○ Eliminar una librería (**) (AUTH)
 // ○ Agregar un libro nuevo (*) (AUTH)
 
-module.exports = { createLibrary, getOneLibrary };
+module.exports = { createLibrary, getLibrary };
