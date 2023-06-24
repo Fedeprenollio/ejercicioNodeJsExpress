@@ -9,6 +9,12 @@ const createLibrary = async (library) => {
 
 
 // ○ Obtener una librería
+const getOneLibrary = async (libraryId) => {
+  return await libraryProvider.getOneLibrary(libraryId);
+};
+
+
+
 // Debe traer también todos los libros
 // ○ Obtener todas las librerías
 // Debe traer también todos los libros
@@ -16,4 +22,4 @@ const createLibrary = async (library) => {
 // ○ Eliminar una librería (**) (AUTH)
 // ○ Agregar un libro nuevo (*) (AUTH)
 
-module.exports = {createLibrary}
+module.exports = {createLibrary,getOneLibrary}
