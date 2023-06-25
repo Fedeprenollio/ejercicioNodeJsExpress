@@ -21,8 +21,36 @@ const getLibrary = async (libraryId) => {
 // Debe traer también todos los libros
 // ○ Obtener todas las librerías
 // Debe traer también todos los libros
-// ○ Modificar una librería (AUTH)
-// ○ Eliminar una librería (**) (AUTH)
-// ○ Agregar un libro nuevo (*) (AUTH)
 
-module.exports = {createLibrary,getLibrary}
+
+
+// ○ Modificar una librería (AUTH)
+const updateLibrary = async (libraryId, newData) => {
+
+  return await libraryProvider.updateLibrary(libraryId,newData);
+
+
+};
+
+
+
+
+// ○ Eliminar una librería (**) (AUTH)
+const deleteLibrary = async (libraryId, newData) => {
+
+  return await libraryProvider.deleteLibrary(libraryId);
+
+
+};
+
+
+
+
+// ○ Agregar un libro nuevo (*) (AUTH)
+const addBookToLibrary = async (library) => {
+  return await libraryProvider.addBookToLibrary(library);
+};
+
+
+
+module.exports = {createLibrary,getLibrary , updateLibrary, deleteLibrary, addBookToLibrary}

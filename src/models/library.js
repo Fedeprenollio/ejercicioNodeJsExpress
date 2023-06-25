@@ -35,10 +35,9 @@ const Library = sequelize.define("Libraries", {
     }
 })
 
-//Una libreria puede tener muchos libros
-Library.hasMany(Book)
-Book.belongsTo(Library);
 
+Library.hasMany(Book); // Una librería puede tener muchos libros
+Book.belongsTo(Library); // Un libro pertenece a una librería
 
 
 module.exports= Library

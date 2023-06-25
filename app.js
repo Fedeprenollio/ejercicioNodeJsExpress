@@ -2,7 +2,7 @@ const express = require("express")
 const app = express()
 const PORT = 3002
 
-const {libraryRouter} = require("./src/routes")
+const {libraryRouter, bookRouter} = require("./src/routes")
 const {initializeDB} = require("./src/config/db-config")
 const errorHandler =(err, req,res,next)=>{
     if(err.message.includes("Ya existe")){
@@ -21,9 +21,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 app.use("/library",  libraryRouter )
-app.use("/book", (req,res)=>{
-    res.send("book")
-})
+app.use("/book",  bookRouter)
 app.use("/user", (req,res)=>{
     res.send("user")
 })

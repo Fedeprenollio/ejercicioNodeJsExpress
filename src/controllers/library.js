@@ -13,6 +13,9 @@ const createLibrary = async (req, res) => {
 };
 
 // ○ Obtener una librería
+// Debe traer también todos los libros
+// ○ Obtener todas las librerías
+// Debe traer también todos los libros
 const getLibrary = async (req, res) => {
   const { libraryId } = req.params;
   try {
@@ -31,11 +34,66 @@ const getLibrary = async (req, res) => {
     res.status(404).json({ action: "Get library", error: error.message });
   }
 };
-// Debe traer también todos los libros
-// ○ Obtener todas las librerías
-// Debe traer también todos los libros
-// ○ Modificar una librería (AUTH)
-// ○ Eliminar una librería (**) (AUTH)
-// ○ Agregar un libro nuevo (*) (AUTH)
 
-module.exports = { createLibrary, getLibrary };
+
+// ○ Modificar una librería (AUTH)
+const updateLibrary = async (req, res) => {
+  const { libraryId } = req.params;
+  const newData = req.body
+  try {
+   const libraryFound = await libraryService.updateLibrary(libraryId,newData);
+
+
+    if (!libraryFound.success) {
+      return res
+        .status(404)
+        .json(libraryFound);
+    } else {
+      res.json(libraryFound);
+    }
+  } catch (error) {
+    res.status(404).json({ action: "Update library", error: error.message });
+  }
+};
+
+
+
+// ○ Eliminar una librería (**) (AUTH)
+const deleteLibrary = async (req, res) => {
+  const { libraryId } = req.params;
+  try {
+   const libraryFound = await libraryService.deleteLibrary(libraryId);
+
+
+    if (!libraryFound) {
+      return res
+        .status(404)
+        .json({ action: "update Library", error: "Library not found" });
+    } else {
+      res.json(libraryFound);
+    }
+  } catch (error) {
+    res.status(404).json({ action: "Update library", error: error.message });
+  }
+};
+
+
+
+
+
+
+
+
+// ○ Agregar un libro nuevo (*) (AUTH)
+const addBookToLibrary = async (req, res) => {
+  try {
+    const newbookToLibrary = await libraryService.addBookToLibrary(req.body);
+    res.json(newbookToLibrary);
+  } catch (error) {
+    res.status(500).json({ action: "Add book to library", error: error.message });
+  }
+};
+
+
+
+module.exports = { createLibrary, getLibrary ,updateLibrary ,deleteLibrary, addBookToLibrary};

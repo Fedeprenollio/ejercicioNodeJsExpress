@@ -34,7 +34,7 @@ const Book = sequelize.define("Books", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    autor:{
+    author:{
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -42,12 +42,12 @@ const Book = sequelize.define("Books", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    library:{
-        type: DataTypes.INTEGER,
-    }
+    // library:{
+    //     type: DataTypes.INTEGER,
+    // }
 })
 
 // Un libro  pertenece a una libreria
 
 
-module.exports= Book
+module.exports= Book 
