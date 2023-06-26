@@ -9,6 +9,11 @@ const User = sequelize.define('Users', {
     autoIncrement: true
 
   },
+  user: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false
@@ -32,6 +37,9 @@ const User = sequelize.define('Users', {
   deleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  role: {
+    type: DataTypes.STRING
   }
 })
 

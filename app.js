@@ -5,6 +5,7 @@ const PORT = 3002
 const { libraryRouter, bookRouter, userRouter, authRouter } = require('./src/routes')
 
 const { initializeDB } = require('./src/config/db-config')
+const { createUserAtBDInitialization } = require('./src/providers/user')
 const errorHandler = (err, req, res, next) => {
   if (err.message.includes('Ya existe')) {
     res.status(500)
@@ -29,6 +30,11 @@ app.use('/login', authRouter)
 app.use(errorHandler)
 app.listen(PORT, async (err) => {
   if (err) console.log(err)
-  await initializeDB()
+  try {
+    await initializeDB()
+    await createUserAtBDInitialization()
+  } catch (error) {
+    console.log('ERRORRR', error.message)
+  }
   console.log(`Conectado al puerto ${PORT}`)
 })

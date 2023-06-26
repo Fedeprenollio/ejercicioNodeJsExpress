@@ -79,19 +79,39 @@ const deleteUser = async (userId) => {
 
 const validateUser = async (options) => {
   try {
-    const user = await User.findAll({
+    const foundUser = await User.findOne({
       where: {
         // [Op.or]:[{firstName: options.firstName},{ lastName : options.lastName }]
-        [Op.and]: [{ email: options.user }, { password: options.password }]
+        [Op.and]: [{ user: options.user }, { password: options.password }]
       }
     })
-    if (user.length !== 0) {
-      return { success: true, user }
+    if (foundUser) {
+      return { success: true, user: foundUser }
     }
-    return { success: false, error: 'Invalid password or email' }
+    return { success: false, error: 'Invalid password or userName' }
   } catch (error) {
     console.log(`Error when validated  User, ${error}`)
     return { success: false, error: error.message }
+  }
+}
+
+const createUserAtBDInitialization = async () => {
+  const [user, created] = await User.findOrCreate({
+    where: { user: 'admin' },
+    defaults: {
+      user: 'admin',
+      firstName: 'firstName ',
+      lastName: 'lastName',
+      password: 'admin',
+      email: 'admin@admin.com',
+      role: 'Admin'
+    }
+  })
+
+  if (created) {
+    console.log('User created:', user.user)
+  } else {
+    console.log('User already exists:', user.user)
   }
 }
 
@@ -99,5 +119,6 @@ module.exports = {
   createUser,
   getUser,
   deleteUser,
-  validateUser
+  validateUser,
+  createUserAtBDInitialization
 }
