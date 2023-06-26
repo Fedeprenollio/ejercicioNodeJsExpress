@@ -1,5 +1,5 @@
-const Library = require("./library")
-const Book = require("./book")
+const Library = require('./library')
+const Book = require('./book')
+const User = require('./user')
 
-
-module.exports = {Library,Book}
+module.exports = { Library, Book, User }

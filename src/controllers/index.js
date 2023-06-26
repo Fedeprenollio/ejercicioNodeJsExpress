@@ -1,8 +1,11 @@
-const libraryController = require("./library")
-const bookController = require("./book")
-
+const libraryController = require('./library')
+const bookController = require('./book')
+const userControllers = require('./user')
+const authControllers = require('./auth')
 
 module.exports = {
-    libraryController,
-    bookController
+  libraryController,
+  bookController,
+  userControllers,
+  authControllers
 }

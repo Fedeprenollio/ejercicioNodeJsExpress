@@ -1,10 +1,6 @@
-const {DataTypes} = require("sequelize")
-const {sequelize} = require("../config/db-config")
-const Library = require("./library")
+const { DataTypes } = require('sequelize')
+const { sequelize } = require('../config/db-config')
 // const Ticket = require("./ticket")
-
-
-
 
 // id Int El identificador de este libro en particular
 // isbn Int Este identificador es único en todo el mundo y representa el
@@ -16,38 +12,38 @@ const Library = require("./library")
 // year String Año de edición del libro
 // library Int El identificador de la librería en donde este libro se encuentra
 
-
-
-const Book = sequelize.define("Books", {
-    id:{
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-
+const Book = sequelize.define(
+  'Books',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    isbn:{
-        type: DataTypes.INTEGER,
-        unique: true
-    
-        },
+    isbn: {
+      type: DataTypes.INTEGER,
+      unique: true
+    },
     title: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    author:{
-        type: DataTypes.STRING,
-        allowNull: false
+    author: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    year:{
-        type: DataTypes.STRING,
-        allowNull: false
+    year: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    // library:{
-    //     type: DataTypes.INTEGER,
-    // }
-})
+    deleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
+  }
+  //   {
+  //     paranoid: true, // Habilita el borrado lógico
+  //   }
+)
 
-// Un libro  pertenece a una libreria
-
-
-module.exports= Book 
+module.exports = Book
