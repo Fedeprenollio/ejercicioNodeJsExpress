@@ -3,10 +3,10 @@ const { Library } = require('../models')
 const createLibrary = async (library) => {
   try {
     const newLibrary = await Library.create(library)
-    return newLibrary
+    return { success: true, newLibrary }
   } catch (error) {
     console.log(`Error when creating library, ${error}`)
-    return { error: error.message }
+    return { success: false, error: error.errors[0].message || error.message }
   }
 }
 

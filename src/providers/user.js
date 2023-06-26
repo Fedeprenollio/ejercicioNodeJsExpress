@@ -1,13 +1,21 @@
 const { Op } = require('sequelize')
 const { User } = require('../models')
 
+const bcrypt = require('bcrypt')
+
 const createUser = async (user) => {
   try {
-    const newUser = await User.create(user)
+    // Generar el hash de la contraseña
+    const saltRounds = 10 // Número de rondas de hashing
+    const hashedPassword = await bcrypt.hash(user.password, saltRounds)
+
+    // Crear el usuario con la contraseña encriptada
+    const newUser = await User.create({ ...user, password: hashedPassword })
+
     return { success: true, user: newUser }
   } catch (error) {
     console.log(`Error when creating User, ${error}`)
-    return { success: false, error: error.message }
+    return { success: false, error: error.errors[0].message || error.message }
   }
 }
 
@@ -44,6 +52,10 @@ const deleteUser = async (userId) => {
   try {
     // "DELETE DE FORMA LOGICA"
     const userToDelete = await User.findByPk(userId)
+
+    if (userToDelete.user === 'admin') {
+      return { success: false, error: "Cannot delete the 'Admin' user" }
+    }
 
     if (!userToDelete) {
       return { success: false, message: 'User to delete not found' }
@@ -82,12 +94,26 @@ const validateUser = async (options) => {
     const foundUser = await User.findOne({
       where: {
         // [Op.or]:[{firstName: options.firstName},{ lastName : options.lastName }]
-        [Op.and]: [{ user: options.user }, { password: options.password }]
+        // [Op.and]: [{ user: options.user }, { password: options.password }]
+        user: options.user
       }
     })
+
+    // if (foundUser) {
+    //   return { success: true, user: foundUser }
+    // }
     if (foundUser) {
-      return { success: true, user: foundUser }
+      // Comparar la contraseña proporcionada con la contraseña almacenada
+      const isPasswordValid = await bcrypt.compare(
+        options.password,
+        foundUser.password
+      )
+
+      if (isPasswordValid) {
+        return { success: true, user: foundUser }
+      }
     }
+
     return { success: false, error: 'Invalid password or userName' }
   } catch (error) {
     console.log(`Error when validated  User, ${error}`)
@@ -96,13 +122,15 @@ const validateUser = async (options) => {
 }
 
 const createUserAtBDInitialization = async () => {
+  const saltRounds = 10 // Número de rondas de hashing
+  const hashedPassword = await bcrypt.hash('admin', saltRounds)
   const [user, created] = await User.findOrCreate({
     where: { user: 'admin' },
     defaults: {
       user: 'admin',
       firstName: 'firstName ',
       lastName: 'lastName',
-      password: 'admin',
+      password: hashedPassword,
       email: 'admin@admin.com',
       role: 'Admin'
     }

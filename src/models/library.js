@@ -21,7 +21,8 @@ const Library = sequelize.define('Libraries', {
   },
   location: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    unique: true
   },
   phone: {
     type: DataTypes.STRING,
