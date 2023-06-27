@@ -21,13 +21,14 @@ const updateLibrary = async (libraryId, newData) => {
 }
 
 // ○ Eliminar una librería (**) (AUTH)
-const deleteLibrary = async (libraryId, newData) => {
+const deleteLibrary = async (libraryId) => {
   return await libraryProvider.deleteLibrary(libraryId)
 }
 
 // ○ Agregar un libro nuevo (*) (AUTH)
-const addBookToLibrary = async (library) => {
-  return await libraryProvider.addBookToLibrary(library)
+// Aca creamos un libro e inmeditamamtne lo agregamos a su libreria
+const addNewBookToLibrary = async (libraryId, newBook) => {
+  return await libraryProvider.addNewBookToLibrary(libraryId, newBook)
 }
 
-module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addBookToLibrary }
+module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addNewBookToLibrary }

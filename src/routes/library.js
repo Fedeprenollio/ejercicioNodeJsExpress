@@ -14,12 +14,15 @@ router.get('/:libraryId?', libraryController.getLibrary)
 // Debe traer también todos los libros
 
 // ○ Modificar una librería (AUTH)
+// Tambien:
+// (*): Para crear un libro, pueden hacerlo de las dos formas:
+// ● Haciendo que la librería tenga un método para agregar un libro nuevo
 router.put('/:libraryId', jwtValidMDW, libraryController.updateLibrary)
 
 // ○ Eliminar una librería (**) (AUTH)
 router.delete('/:libraryId', jwtValidMDW, libraryController.deleteLibrary)
 
 // ○ Agregar un libro nuevo (*) (AUTH)
-router.post('/addBook/:libraryId', jwtValidMDW, libraryController.addBookToLibrary)
+router.post('/:libraryId/newBook', jwtValidMDW, libraryController.addNewBookToLibrary)
 
 module.exports = router

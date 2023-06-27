@@ -6,20 +6,28 @@ const { Library, Book } = require('../models')
 // en mi caso, he elegido asignarlo mediante el bodu
 const createBook = async (book, libraryId) => {
   try {
-    const newBook = await Book.create({ ...book })
-
-    // Si entre el body viene una propiedad llamada "addToLibraryId" quiere decir que quiero asociar un libro existente a una biblioteca
+    // Si entre el body viene una propiedad llamada "addToLibraryId" quiere decir que quiero asociar un libro al momento de crearlo
+    //     (*): Para crear un libro, pueden hacerlo de las dos formas:
+    // ● Crear un libro directamente con /book y enviar el id de la librería
     if (book.addToLibraryId) {
       const addToLibrary = await Library.findByPk(book.addToLibraryId)
-      await newBook.setLibrary(addToLibrary)
-      // await addToLibrary.setBook(book)
-      await newBook.save()
-    }
+      if (!addToLibrary) {
+        return { success: false, book: 'Library not found to associate later when creating the book' }
+      }
+      const newBook = await Book.create({ ...book })
 
-    return { success: true, book: newBook }
+      await newBook.setLibrary(addToLibrary)
+      return { success: true, book: newBook }
+
+      // await addToLibrary.setBook(book)
+      // await newBook.save()
+    } else {
+      const newBook = await Book.create({ ...book })
+      return { success: true, book: newBook }
+    }
   } catch (error) {
     console.log(`Error when creating library, ${error}`)
-    return { success: false, error: error.message }
+    return { success: false, error: error.errors[0].message || error.message }
   }
 }
 
@@ -56,20 +64,42 @@ const getBook = async (bookId) => {
 
 // ○ Modificar un libro (AUTH)
 const updateBook = async (bookId, newData) => {
+  let alreadyAssociatedLibrary = false
   try {
     // Si entre el body viene una propiedad llamada "addToLibraryId" quiere decir que quiero asociar un libro existente a una biblioteca
     if (newData.addToLibraryId) {
       const book = await Book.findByPk(bookId)
       const addToLibrary = await Library.findByPk(newData.addToLibraryId)
-      await book.setLibrary(addToLibrary)
+      if (!book || !addToLibrary) {
+        const error = 'failed to associate, book o library not found'
+        return { success: false, error }
+      }
+
+      // NOTA: si ya existe la asociacion, no la vuelvo a hacer, y notifico
+      if (await addToLibrary.hasBook(book)) {
+        alreadyAssociatedLibrary = `An association already exists between the book ID:${bookId} and the library ID:${newData.addToLibraryId} `
+      } else {
+        await book.setLibrary(addToLibrary)
+      }
       // await addToLibrary.setBook(book)
       await book.save()
-    } else if (newData.removeToLibraryId) { // Si entre el body viene una propiedad llamada "removeToLibraryId" quiere decir que quiero eliminar un libro existente a una biblioteca
+    }
+
+    if (newData.removeToLibraryId) { // Si entre el body viene una propiedad llamada "removeToLibraryId" quiere decir que quiero eliminar un libro existente a una biblioteca
       const book = await Book.findByPk(bookId)
       const removeToLibrary = await Library.findByPk(newData.removeToLibraryId)
-      // await book.setLibrary(null)
-      await removeToLibrary.removeBook(book)
-      await book.save()
+      if (!book || !removeToLibrary) {
+        const error = 'failed remove to associate, book o library not found'
+        return { success: false, error }
+      }
+
+      if (!(await removeToLibrary.hasBook(book))) {
+        alreadyAssociatedLibrary = `There is no  association between the book ID:${bookId} and the library ID:${newData.removeToLibraryId} `
+      } else {
+        await removeToLibrary.removeBook(book)
+      }
+
+      // await book.save()
     }
 
     const [updatedRowsBookLength] = await Book.update(newData, {
@@ -84,6 +114,7 @@ const updateBook = async (bookId, newData) => {
     return {
       success: true,
       message: 'Book updated successfully',
+      alreadyAssociatedLibrary,
       updatedLibrary: updatedBook
     }
   } catch (error) {

@@ -67,18 +67,20 @@ const deleteLibrary = async (req, res) => {
       res.json(libraryFound)
     }
   } catch (error) {
-    res.status(404).json({ action: 'Update library', error: error.message })
+    res.status(404).json({ success: false, action: 'Update library', error: error.message })
   }
 }
 
 // ○ Agregar un libro nuevo (*) (AUTH)
-const addBookToLibrary = async (req, res) => {
+const addNewBookToLibrary = async (req, res) => {
+  const { libraryId } = req.params
   try {
-    const newbookToLibrary = await libraryService.addBookToLibrary(req.body)
-    res.json(newbookToLibrary)
+    const newBookToLibrary = await libraryService.addNewBookToLibrary(libraryId, req.body)
+
+    res.json(newBookToLibrary)
   } catch (error) {
-    res.status(500).json({ action: 'Add book to library', error: error.message })
+    res.status(500).json({ success: false, action: 'Add new book to library', error: error.message })
   }
 }
 
-module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addBookToLibrary }
+module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addNewBookToLibrary }
