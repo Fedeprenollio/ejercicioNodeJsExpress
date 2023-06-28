@@ -39,7 +39,7 @@ const getBook = async (bookId) => {
       const foundBooks = await Book.findAll({
         include: {
           model: Library,
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         },
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       })
@@ -56,7 +56,7 @@ const getBook = async (bookId) => {
             model: Library,
             attributes: { exclude: ['createdAt', 'updatedAt'] }
           },
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         })
 
       if (!foundBook) {

@@ -83,4 +83,41 @@ const addNewBookToLibrary = async (req, res) => {
   }
 }
 
-module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addNewBookToLibrary }
+const getLibraryAdmin = async (req, res) => {
+  const { libraryId } = req.params
+  const deleted = req.query.deleted
+
+  try {
+    // NOTA: le dejo al provider la decision de retornar una sola libreria o todas dependiendo si le llega o no un parametro a su función
+    const libraryFound = await libraryService.getLibraryAdmin(libraryId, deleted)
+
+    if (!libraryFound) {
+      return res
+        .status(404)
+        .json({ action: 'get Library', error: 'Library not found' })
+    } else {
+      res.json(libraryFound)
+    }
+  } catch (error) {
+    res.status(404).json({ action: 'Get library', error: error.message })
+  }
+}
+
+const restoreLibrary = async (req, res) => {
+  const { libraryId } = req.params
+  try {
+    const libraryFound = await libraryService.restoreLibrary(libraryId)
+
+    if (!libraryFound.success) {
+      return res
+        .status(404)
+        .json(libraryFound)
+    } else {
+      res.json(libraryFound)
+    }
+  } catch (error) {
+    res.status(404).json({ action: 'Update library', error: error.message })
+  }
+}
+
+module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addNewBookToLibrary, getLibraryAdmin, restoreLibrary }

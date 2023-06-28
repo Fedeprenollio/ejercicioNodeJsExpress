@@ -31,4 +31,12 @@ const addNewBookToLibrary = async (libraryId, newBook) => {
   return await libraryProvider.addNewBookToLibrary(libraryId, newBook)
 }
 
-module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addNewBookToLibrary }
+const getLibraryAdmin = async (libraryId, deleted) => {
+  return await libraryProvider.getLibraryAdmin(libraryId, deleted)
+}
+
+const restoreLibrary = async (libraryId) => {
+  return await libraryProvider.restoreLibrary(libraryId)
+}
+
+module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addNewBookToLibrary, getLibraryAdmin, restoreLibrary }
