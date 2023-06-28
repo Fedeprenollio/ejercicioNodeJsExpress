@@ -31,9 +31,21 @@ const Library = sequelize.define('Libraries', {
       isNumeric: true
     }
   }
-})
+  // deleted: {
+  //   type: DataTypes.BOOLEAN,
+  //   defaultValue: false
+  // }
+},
 
-Library.hasMany(Book) // Una librería puede tener muchos libros
-Book.belongsTo(Library) // Un libro pertenece a una librería
+{
+  paranoid: true // Habilita el borrado lógico
+}
+
+)
+
+Library.hasMany(Book, { onDelete: 'CASCADE' }) // Una librería puede tener muchos libros
+Book.belongsTo(Library, {
+  onDelete: 'CASCADE'
+}) // Un libro pertenece a una librería
 
 module.exports = Library

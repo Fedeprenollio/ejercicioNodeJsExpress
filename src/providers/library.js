@@ -1,3 +1,4 @@
+const { sequelize } = require('../config/db-config')
 const { Library, Book } = require('../models')
 
 const createLibrary = async (library) => {
@@ -13,14 +14,24 @@ const createLibrary = async (library) => {
 const getLibrary = async (libraryId) => {
   try {
     if (!libraryId) {
-      const foundLibraries = await Library.findAll({ include: { all: true } })
+      const foundLibraries = await Library.findAll({
+        include: {
+          all: true,
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
+        },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      })
       if (foundLibraries.length === 0) {
         return { success: false, error: 'Library not found' }
       }
       return { success: true, library: foundLibraries }
     }
     const foundLibrary = await Library.findByPk(libraryId, {
-      include: { all: true }
+      include: {
+        all: true,
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      },
+      attributes: { exclude: ['createdAt', 'updatedAt'] }
     })
 
     if (!foundLibrary) {
@@ -36,15 +47,17 @@ const getLibrary = async (libraryId) => {
 const updateLibrary = async (libraryId, newData) => {
   try {
     const notFoundBooks = [] // Array para almacenar los ID de los libros no encontrados
-    const notAssociatedBooks = [] // Array para almacenar los ID de los libros no asociados previamente que no necesitan volverse a eliminar
-    const alreadyAssociatedBooks = [] // Array para almacenar los ID de los libros ya asociados previamente que no necesitan volverse a asociar
+    const previouslyUnassociatedBooks = [] // Array para almacenar los ID de los libros no asociados previamente que no necesitan volverse a eliminar
+    const alreadyAssociatedPreviouslyBooks = [] // Array para almacenar los ID de los libros ya asociados previamente que no necesitan volverse a asociar
+    const successfulPartnerships = [] // Array para almacenar los ID de los libros asociados exitosamente a la libreria
+    const unsuccessfulDeletions = [] // Array para almacenar los ID de los libros removidos exitosamente a la libreria
 
     const library = await Library.findByPk(libraryId)
     if (!library) {
       return { success: false, message: 'Library to update not found' }
     }
 
-    //     (*): Para crear un libro, pueden hacerlo de las dos formas:
+    // (*): Para crear un libro, pueden hacerlo de las dos formas:
     // ● Haciendo que la librería tenga un método para agregar un libro nuevo (En este caso, se le puede agregar uno solo o muchos a la vez)
 
     if (newData.receiveBooks && newData.receiveBooks.length > 0) {
@@ -54,9 +67,10 @@ const updateLibrary = async (libraryId, newData) => {
         if (!bookToAdd) {
           notFoundBooks.push(bookId)
         } else if (!(await library.hasBook(bookToAdd))) {
+          successfulPartnerships.push(bookToAdd)
           await library.addBook(bookToAdd)
         } else {
-          alreadyAssociatedBooks.push(bookId)
+          alreadyAssociatedPreviouslyBooks.push(bookId)
         }
       }
     }
@@ -68,9 +82,10 @@ const updateLibrary = async (libraryId, newData) => {
         if (!bookToRemove) {
           notFoundBooks.push(bookId)
         } else if ((await library.hasBook(bookToRemove))) {
-          await library.addBook(bookToRemove)
+          unsuccessfulDeletions.push(bookToRemove)
+          await library.removeBook(bookToRemove)
         } else {
-          notAssociatedBooks.push(bookId)
+          previouslyUnassociatedBooks.push(bookId)
         }
       }
     }
@@ -78,18 +93,16 @@ const updateLibrary = async (libraryId, newData) => {
     const [updatedLibraryLength] = await Library.update(newData, {
       where: { id: libraryId }
     })
-
-    if (updatedLibraryLength === 0) {
-      return { success: false, message: 'Library to update not found' }
-    }
-
     const updatedLibrary = await Library.findByPk(libraryId, { include: { all: true } })
+
     return {
       success: true,
-      message: 'Library updated successfully',
+      message: `${updatedLibraryLength} libraries updated on their information. Successful Partnerships were ${successfulPartnerships.length} and unsuccessful Deletions were ${unsuccessfulDeletions.length}. Besides, Not found books: ${notFoundBooks.length}, previously unassociated books: ${previouslyUnassociatedBooks.length},   Already associated books: ${alreadyAssociatedPreviouslyBooks.length}.`,
+      unsuccessfulDeletions: unsuccessfulDeletions.map(book => book.id),
+      successfulPartnerships: successfulPartnerships.map(book => book.id),
       notFoundBooks,
-      notAssociatedBooks,
-      alreadyAssociatedBooks,
+      previouslyUnassociatedBooks,
+      alreadyAssociatedPreviouslyBooks,
       updatedLibrary
     }
   } catch (error) {
@@ -99,14 +112,31 @@ const updateLibrary = async (libraryId, newData) => {
 }
 
 const deleteLibrary = async (libraryId) => {
+  const t = await sequelize.transaction() // Iniciar la transacción
+
   try {
+    // Buscar la biblioteca a eliminar
+    const libraryToDelete = await Library.findByPk(libraryId, { transaction: t })
+
+    if (!libraryToDelete) {
+      await t.rollback() // Revertir la transacción
+      return { success: false, message: 'Library to delete not found' }
+    }
+
+    // Eliminar la relación entre la biblioteca y sus libros asociados
+    await libraryToDelete.setBooks([], { transaction: t })
+
     const rowsDeletedLibrary = await Library.destroy({
-      where: { id: libraryId }
+      where: { id: libraryId },
+      transaction: t
     })
 
     if (rowsDeletedLibrary === 0) {
+      await t.rollback() // Revertir la transacción
       return { success: false, message: 'Library to delete not found' }
     }
+
+    await t.commit() // Confirmar la transacción
 
     return {
       success: true,
@@ -114,6 +144,7 @@ const deleteLibrary = async (libraryId) => {
     }
   } catch (error) {
     console.log(`Error deleting  library, ${error}`)
+    await t.rollback() // Revertir la transacción
     return { error: error.message }
   }
 }
@@ -123,7 +154,7 @@ const addNewBookToLibrary = async (libraryId, newBook) => {
   try {
     const library = await Library.findByPk(libraryId)
     if (!library) {
-      return { success: false, error: 'Library not found' }
+      return { success: false, error: 'Library not found!' }
     }
 
     const newBookWithLibrary = await Book.create({ ...newBook, LibraryId: libraryId })

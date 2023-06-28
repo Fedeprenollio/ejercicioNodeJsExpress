@@ -45,8 +45,47 @@ const deleteUser = async (req, res) => {
   }
 }
 
+const updateUser = async (req, res) => {
+  const { userId } = req.params
+  const { role, user } = req.user
+  console.log('QUE USER', role)
+  try {
+    const foundUserToUpdate = await userService.updateUser(userId, req.body, role, user)
+
+    if (!foundUserToUpdate.success) {
+      return res
+        .status(404)
+        .json(foundUserToUpdate)
+    } else {
+      res.json(foundUserToUpdate)
+    }
+  } catch (error) {
+    res.status(404).json({ action: 'Update library', error: error.message })
+  }
+}
+
+const adminUpdatingUser = async (req, res) => {
+  const { userId } = req.params
+  const { user } = req.user
+  try {
+    const foundUserToUpdate = await userService.adminUpdatingUser(userId, req.body, user)
+
+    if (!foundUserToUpdate.success) {
+      return res
+        .status(404)
+        .json(foundUserToUpdate)
+    } else {
+      res.json(foundUserToUpdate)
+    }
+  } catch (error) {
+    res.status(404).json({ action: 'Update library', error: error.message })
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
-  deleteUser
+  deleteUser,
+  updateUser,
+  adminUpdatingUser
 }

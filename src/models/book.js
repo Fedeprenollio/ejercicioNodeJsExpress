@@ -35,15 +35,15 @@ const Book = sequelize.define(
     year: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    deleted: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
     }
+    // deleted: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: false
+    // }
+  },
+  {
+    paranoid: true // Habilita el borrado lógico
   }
-  //   {
-  //     paranoid: true, // Habilita el borrado lógico
-  //   }
 )
 
 module.exports = Book

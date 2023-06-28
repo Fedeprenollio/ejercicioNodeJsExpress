@@ -12,7 +12,15 @@ const User = sequelize.define('Users', {
   user: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
+    validate: {
+      notEmpty: true,
+      noSpaces (value) {
+        if (/\s/.test(value)) {
+          throw new Error('Username cannot contain spaces')
+        }
+      }
+    }
   },
   firstName: {
     type: DataTypes.STRING,
@@ -27,7 +35,9 @@ const User = sequelize.define('Users', {
     allowNull: false,
     unique: true,
     validate: {
-      isEmail: true
+      isEmail: {
+        msg: 'The field must be a email valid'
+      }
     }
   },
   password: {
@@ -39,8 +49,21 @@ const User = sequelize.define('Users', {
     defaultValue: false
   },
   role: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    defaultValue: 'User',
+    validate: {
+      isIn: {
+        args: [['User', 'Admin']],
+        msg: 'Invalid role. Only "User" or "Admin" are allowed.'
+      }
+    }
+
   }
-})
+},
+
+{
+  paranoid: true // Habilita el borrado lógico
+}
+)
 
 module.exports = User

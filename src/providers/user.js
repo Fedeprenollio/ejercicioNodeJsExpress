@@ -1,13 +1,13 @@
-const { Op } = require('sequelize')
 const { User } = require('../models')
-
-const bcrypt = require('bcrypt')
+const { hashPassword } = require('../Utils')
 
 const createUser = async (user) => {
+  if (user.role) {
+    user.role = 'User'
+  }
   try {
     // Generar el hash de la contraseña
-    const saltRounds = 10 // Número de rondas de hashing
-    const hashedPassword = await bcrypt.hash(user.password, saltRounds)
+    const hashedPassword = await hashPassword.hashPassword(user.password)
 
     // Crear el usuario con la contraseña encriptada
     const newUser = await User.create({ ...user, password: hashedPassword })
@@ -104,7 +104,7 @@ const validateUser = async (options) => {
     // }
     if (foundUser) {
       // Comparar la contraseña proporcionada con la contraseña almacenada
-      const isPasswordValid = await bcrypt.compare(
+      const isPasswordValid = await hashPassword.validatePassword(
         options.password,
         foundUser.password
       )
@@ -122,8 +122,7 @@ const validateUser = async (options) => {
 }
 
 const createUserAtBDInitialization = async () => {
-  const saltRounds = 10 // Número de rondas de hashing
-  const hashedPassword = await bcrypt.hash('admin', saltRounds)
+  const hashedPassword = await hashPassword.hashPassword('admin')
   const [user, created] = await User.findOrCreate({
     where: { user: 'admin' },
     defaults: {
@@ -143,10 +142,137 @@ const createUserAtBDInitialization = async () => {
   }
 }
 
+// NOTA: se necesita laa clave actual para editar un usuario por su parte y estar logueado con su token
+const updateUser = async (userId, newData, role, user) => {
+  const { currentPassword, newPassword } = newData
+  if (userId === 1) {
+    newData.role = null
+  }
+  try {
+    // Verificar la existencia del usuario antes de la actualización
+    const foundUser = await User.findByPk(userId)
+    if (!foundUser) {
+      return { success: false, message: 'User not found' }
+    }
+
+    // Comparar la contraseña proporcionada con la contraseña almacenada
+    const isPasswordValid = await hashPassword.validatePassword(
+      currentPassword,
+      foundUser.password
+    )
+
+    if (isPasswordValid === false || foundUser.user !== user) {
+      return { success: false, message: 'Invalid password or user' }
+    }
+
+    if (isPasswordValid === true && newPassword) {
+      // Generar el hash de la NUEVA contraseña
+      const hashedNewPassword = await hashPassword.hashPassword(newPassword)
+
+      if (!hashedNewPassword) {
+        return { success: false, message: 'Failed to hash new password' }
+      }
+
+      const [updatedRowsUserLength] = await User.update({ ...newData, password: hashedNewPassword }, {
+        where: { id: userId }
+      })
+      if (updatedRowsUserLength === 0) {
+        return { success: false, message: 'User to update not found or other problem' }
+      }
+    } else {
+      const [updatedRowsUserLength] = await User.update({ ...newData }, {
+        where: { id: userId }
+      })
+      if (updatedRowsUserLength === 0) {
+        return { success: false, message: 'User to update not found or other problem' }
+      }
+    }
+
+    const updatedUser = await User.findByPk(userId)
+    return {
+      success: true,
+      message: 'User updated successfully',
+      updatedUser
+    }
+  } catch (error) {
+    console.log(`Error updating  user, ${error}`)
+    return { success: false, error: error.message }
+  }
+}
+
+// NOTA: Un ADMIN puede editar un usuario y cambar roles
+const adminUpdatingUser = async (userId, newData, user) => {
+  const { newPassword, currentPasswordAdmin } = newData
+  // NOTA: El admin inicial no puede cambiar su rol, siempre serà admin
+  if (userId === '1') {
+    newData.role = 'Admin'
+  }
+  console.log('LO NUEVO', newData, userId)
+  try {
+    // Verificar la existencia del ADMIN antes de la actualización para luego verificar su password
+    const foundAdmin = await User.findOne({
+      where: {
+        user
+      }
+    })
+    if (!foundAdmin) {
+      return { success: false, message: 'Admin not found' }
+    }
+    // Comparar la contraseña proporcionada por el Admin con la contraseña almacenada
+    const isPasswordValid = await hashPassword.validatePassword(
+      currentPasswordAdmin,
+      foundAdmin.password
+    )
+    if (isPasswordValid === false) {
+      return { success: false, message: 'Invalid password' }
+    }
+
+    // Verificar la existencia del usuario antes de la actualización
+    const foundUser = await User.findByPk(userId)
+    if (!foundUser) {
+      return { success: false, message: 'User not found' }
+    }
+
+    if (newPassword) {
+      // Generar el hash de la NUEVA contraseña
+      const hashedNewPassword = await hashPassword.hashPassword(newPassword)
+
+      if (!hashedNewPassword) {
+        return { success: false, message: 'Failed to hash new password' }
+      }
+      const [updatedRowsUserLength] = await User.update({ ...newData, password: hashedNewPassword }, {
+        where: { id: userId }
+      })
+      if (updatedRowsUserLength === 0) {
+        return { success: false, message: 'User to update not found or other problem, eg empty fields' }
+      }
+    } else {
+      const [updatedRowsUserLength] = await User.update({ ...newData }, {
+        where: { id: userId }
+      })
+      if (updatedRowsUserLength === 0) {
+        return { success: false, message: 'User to update not found or other problem, eg empty fields' }
+      }
+    }
+
+    const updatedUser = await User.findByPk(userId)
+    return {
+      success: true,
+      message: 'User updated successfully by Administrator',
+      updatedUser
+    }
+  } catch (error) {
+    console.error(`Error updating  user by Administrator , ${error}`)
+    return { success: false, error }
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
   deleteUser,
   validateUser,
-  createUserAtBDInitialization
+  createUserAtBDInitialization,
+  updateUser,
+  adminUpdatingUser
 }

@@ -36,7 +36,13 @@ const createBook = async (book, libraryId) => {
 const getBook = async (bookId) => {
   try {
     if (!bookId) {
-      const foundBooks = await Book.findAll({ where: { deleted: false } }, { include: { all: true } })
+      const foundBooks = await Book.findAll({
+        include: {
+          model: Library,
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+        },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      })
 
       if (foundBooks.length === 0) {
         return { success: false, error: 'No se encontraron libros' }
@@ -45,9 +51,12 @@ const getBook = async (bookId) => {
       return { success: true, book: foundBooks }
     } else {
       const foundBook = await Book.findByPk(bookId,
-        { where: { deleted: false } },
         {
-          include: { all: true }
+          include: {
+            model: Library,
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
+          },
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
         })
 
       if (!foundBook) {
@@ -127,34 +136,34 @@ const updateBook = async (bookId, newData) => {
 const deleteBook = async (bookId) => {
   try {
     // "DELETE DE FORMA LOGICA"
-    const bookToDelete = await Book.findByPk(bookId)
+    // const bookToDelete = await Book.findByPk(bookId)
 
-    if (!bookToDelete) {
-      return { success: false, message: 'Book to delete not found' }
-    }
-
-    // Realiza el borrado lógico
-    bookToDelete.deleted = true
-    await bookToDelete.save()
-
-    return {
-      success: true,
-      message: `Deleted book with id ${bookId}:  successfully`
-    }
-
-    // DELETE FISICO!!!
-    // const rowsDeletedBook = await Book.destroy( {
-    //   where: { id: bookId },
-    // });
-
-    // if (rowsDeletedBook === 0) {
-    //   return { success: false, message: "Book to delete not found" };
+    // if (!bookToDelete) {
+    //   return { success: false, message: 'Book to delete not found' }
     // }
+
+    // // Realiza el borrado lógico
+    // bookToDelete.deleted = true
+    // await bookToDelete.save()
 
     // return {
     //   success: true,
-    //   message: `deleted book with id ${bookId}:  successfully`,
-    // };
+    //   message: `Deleted book with id ${bookId}:  successfully`
+    // }
+
+    // DELETE FISICO!!!
+    const rowsDeletedBook = await Book.destroy({
+      where: { id: bookId }
+    })
+
+    if (rowsDeletedBook === 0) {
+      return { success: false, message: 'Book to delete not found' }
+    }
+
+    return {
+      success: true,
+      message: `deleted book with id ${bookId}:  successfully`
+    }
   } catch (error) {
     console.log(`Error deleting  library, ${error}`)
     return { success: false, error: error.message }

@@ -1,16 +1,19 @@
 const express = require('express')
 const { userControllers } = require('../controllers')
 const router = express.Router()
+const { jwtValidMDW, userIsAdmin } = require('../middleware/auth-mdw')
 
 // ● Acciones
 // ○ Login
 
-router.post('/', userControllers.createUser)
+router.post('/', userIsAdmin, userControllers.createUser)
 
 router.get('/:userId?', userControllers.getUser)
 
-router.put('/:userId', userControllers.deleteUser)
+router.put('/:userId', jwtValidMDW, userControllers.updateUser)
+router.put('/admin/:userId', userIsAdmin, userControllers.adminUpdatingUser
+)
 
-router.delete('/:userId?', userControllers.deleteUser)
+router.delete('/:userId?', userIsAdmin, userControllers.deleteUser)
 
 module.exports = router
