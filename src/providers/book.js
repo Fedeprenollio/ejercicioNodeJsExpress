@@ -134,24 +134,11 @@ const updateBook = async (bookId, newData) => {
 
 // ○ Eliminar un libro (**) (AUTH)
 const deleteBook = async (bookId) => {
+  const foundBook = await Book.findByPk(bookId)
+
   try {
-    // "DELETE DE FORMA LOGICA"
-    // const bookToDelete = await Book.findByPk(bookId)
+    foundBook.setLibrary([])
 
-    // if (!bookToDelete) {
-    //   return { success: false, message: 'Book to delete not found' }
-    // }
-
-    // // Realiza el borrado lógico
-    // bookToDelete.deleted = true
-    // await bookToDelete.save()
-
-    // return {
-    //   success: true,
-    //   message: `Deleted book with id ${bookId}:  successfully`
-    // }
-
-    // DELETE FISICO!!!
     const rowsDeletedBook = await Book.destroy({
       where: { id: bookId }
     })

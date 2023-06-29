@@ -39,4 +39,13 @@ const restoreLibrary = async (libraryId) => {
   return await libraryProvider.restoreLibrary(libraryId)
 }
 
-module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addNewBookToLibrary, getLibraryAdmin, restoreLibrary }
+module.exports = {
+  createLibrary,
+  getLibrary,
+  updateLibrary,
+  deleteLibrary,
+  addNewBookToLibrary,
+  getLibraryAdmin,
+  restoreLibrary
+
+}

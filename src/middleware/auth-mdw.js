@@ -35,4 +35,21 @@ const userIsAdmin = (req, res, next) => {
   })(req, res, next)
 }
 
-module.exports = { SERVER_SECRET, jwtValidMDW, userIsAdmin }
+const userIsSuperAdmin = (req, res, next) => {
+  return passport.authenticate('jwt', { session: false }, (error, user, info) => {
+    if (error) {
+      console.log(error)
+      return next(error)
+    }
+    // if (!user) { return res.redirect('/login') }
+
+    // EL SUPER ADMIN (que tiene control para recuperar  books y libraries eliminadas) es el user que se genera automaticamente al iniciar la DB y tiene por user= admin
+    if (user.user === 'admin') {
+      req.user = user
+      return next()
+    }
+    res.status(401).json({ error: 'User  not SUPER Admin' })
+  })(req, res, next)
+}
+
+module.exports = { SERVER_SECRET, jwtValidMDW, userIsAdmin, userIsSuperAdmin }

@@ -1,4 +1,4 @@
-const { libraryService } = require('../services')
+const { libraryService, adminService } = require('../services')
 
 // ● Acciones
 // ○ Crear librería (AUTH)
@@ -116,8 +116,17 @@ const restoreLibrary = async (req, res) => {
       res.json(libraryFound)
     }
   } catch (error) {
-    res.status(404).json({ action: 'Update library', error: error.message })
+    res.status(404).json({ action: 'Recover library', error: error.message })
   }
 }
 
-module.exports = { createLibrary, getLibrary, updateLibrary, deleteLibrary, addNewBookToLibrary, getLibraryAdmin, restoreLibrary }
+module.exports = {
+  createLibrary,
+  getLibrary,
+  updateLibrary,
+  deleteLibrary,
+  addNewBookToLibrary,
+  getLibraryAdmin,
+  restoreLibrary
+
+}

@@ -20,7 +20,7 @@ const getLibrary = async (libraryId) => {
           all: true,
           attributes: { exclude: ['createdAt', 'updatedAt'] }
         },
-        paranoid: false,
+        // paranoid: false,
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       })
       if (foundLibraries.length === 0) {
@@ -170,13 +170,12 @@ const addNewBookToLibrary = async (libraryId, newBook) => {
 
 const getLibraryAdmin = async (libraryId, deleted) => {
   let deletedBoolean
-  if (deleted === 'true') {
+  if (deleted === 'no') {
     deletedBoolean = true
-  } else if (deleted === 'false') {
+  } else if (deleted === 'yes') {
     deletedBoolean = false
   }
 
-  console.log(deletedBoolean)
   try {
     if (!libraryId) {
       // Obtener todos los elementos, incluidos los eliminados, paranoid = false

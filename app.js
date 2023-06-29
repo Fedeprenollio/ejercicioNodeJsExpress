@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const PORT = 3002
 
-const { libraryRouter, bookRouter, userRouter, authRouter } = require('./src/routes')
+const { libraryRouter, bookRouter, userRouter, authRouter, adminRouter } = require('./src/routes')
 
 const { initializeDB } = require('./src/config/db-config')
 const { userProvider } = require('./src/providers')
@@ -22,6 +22,9 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
+
+app.use('/admin', adminRouter)
+
 app.use('/library', libraryRouter)
 app.use('/book', bookRouter)
 app.use('/user', userRouter)
