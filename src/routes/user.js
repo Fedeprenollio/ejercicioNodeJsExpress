@@ -8,7 +8,7 @@ const { jwtValidMDW, userIsAdmin } = require('../middleware/auth-mdw')
 
 router.post('/', userIsAdmin, userControllers.createUser)
 
-router.get('/:userId?', userControllers.getUser)
+router.get('/:userId?', userIsAdmin, userControllers.getUser)
 
 router.put('/:userId', jwtValidMDW, userControllers.updateUser)
 

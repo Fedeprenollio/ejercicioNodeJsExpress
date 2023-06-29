@@ -38,7 +38,6 @@ const getSearchAdmin = async (req, res) => {
   }
 }
 
-
 module.exports = {
   getSearch,
   getSearchAdmin

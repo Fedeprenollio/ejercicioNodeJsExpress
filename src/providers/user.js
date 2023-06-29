@@ -184,11 +184,11 @@ const updateUser = async (userId, newData, role, user) => {
   }
 }
 
-
 module.exports = {
   createUser,
   getUser,
   deleteUser,
   validateUser,
   createUserAtBDInitialization,
-  updateUser}
+  updateUser
+}

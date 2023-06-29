@@ -1,11 +1,8 @@
 const express = require('express')
 const app = express()
-const PORT = 3002
 
 const { libraryRouter, bookRouter, userRouter, authRouter, adminRouter, searchRouter } = require('./src/routes')
 
-const { initializeDB } = require('./src/config/db-config')
-const { userProvider } = require('./src/providers')
 const errorHandler = (err, req, res, next) => {
   if (err.message.includes('Ya existe')) {
     res.status(500)
@@ -32,13 +29,5 @@ app.use('/login', authRouter)
 app.use('/search', searchRouter)
 
 app.use(errorHandler)
-app.listen(PORT, async (err) => {
-  if (err) console.log(err)
-  try {
-    await initializeDB()
-    await userProvider.createUserAtBDInitialization()
-  } catch (error) {
-    console.log('ERRORRR', error.message)
-  }
-  console.log(`Conectado al puerto ${PORT}`)
-})
+
+module.exports = app

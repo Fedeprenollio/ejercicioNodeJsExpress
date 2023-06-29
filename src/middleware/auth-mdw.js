@@ -41,7 +41,6 @@ const userIsSuperAdmin = (req, res, next) => {
       console.log(error)
       return next(error)
     }
-    // if (!user) { return res.redirect('/login') }
 
     // EL SUPER ADMIN (que tiene control para recuperar  books y libraries eliminadas) es el user que se genera automaticamente al iniciar la DB y tiene por user= admin
     if (user.user === 'admin') {
