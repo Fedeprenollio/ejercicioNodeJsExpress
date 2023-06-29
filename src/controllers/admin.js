@@ -73,9 +73,67 @@ const restoreUser = async (req, res) => {
   }
 }
 
+const adminUpdatingUser = async (req, res) => {
+  const { userId } = req.params
+  const { user } = req.user
+  try {
+    const foundUserToUpdate = await adminService.adminUpdatingUser(userId, req.body, user)
+
+    if (!foundUserToUpdate.success) {
+      return res
+        .status(404)
+        .json(foundUserToUpdate)
+    } else {
+      res.json(foundUserToUpdate)
+    }
+  } catch (error) {
+    res.status(404).json({ action: 'Update library', error: error.message })
+  }
+}
+
+const getLibraryAdmin = async (req, res) => {
+  const { libraryId } = req.params
+  const bring = req.query.bring
+  console.log(bring)
+
+  try {
+    // NOTA: le dejo al provider la decision de retornar una sola libreria o todas dependiendo si le llega o no un parametro a su función
+    const libraryFound = await adminService.getLibraryAdmin(libraryId, bring)
+
+    if (!libraryFound) {
+      return res
+        .status(404)
+        .json({ action: 'get Library', error: 'Library not found' })
+    } else {
+      res.json(libraryFound)
+    }
+  } catch (error) {
+    res.status(404).json({ action: 'Get library', error: error.message })
+  }
+}
+
+const restoreLibrary = async (req, res) => {
+  const { libraryId } = req.params
+  try {
+    const libraryFound = await adminService.restoreLibrary(libraryId)
+
+    if (!libraryFound.success) {
+      return res
+        .status(404)
+        .json(libraryFound)
+    } else {
+      res.json(libraryFound)
+    }
+  } catch (error) {
+    res.status(404).json({ action: 'Recover library', error: error.message })
+  }
+}
 module.exports = {
   getBookAdmin,
   restoreBook,
   getUserAdmin,
-  restoreUser
+  restoreUser,
+  adminUpdatingUser,
+  getLibraryAdmin,
+  restoreLibrary
 }

@@ -16,10 +16,24 @@ const restoreUser = async (userId, deleted) => {
   return await adminProvider.restoreUser(userId, deleted)
 }
 
+const adminUpdatingUser = async (userId, newData, user) => {
+  return await adminProvider.adminUpdatingUser(userId, newData, user)
+}
+const getLibraryAdmin = async (libraryId, deleted) => {
+  return await adminProvider.getLibraryAdmin(libraryId, deleted)
+}
+
+const restoreLibrary = async (libraryId) => {
+  return await adminProvider.restoreLibrary(libraryId)
+}
+
 module.exports = {
   getBookAdmin,
   restoreBook,
   getUserAdmin,
-  restoreUser
+  restoreUser,
+  adminUpdatingUser,
+  getLibraryAdmin,
+  restoreLibrary
 
 }

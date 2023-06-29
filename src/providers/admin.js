@@ -1,5 +1,6 @@
 const { Op } = require('sequelize')
-const { Book, User } = require('../models')
+const { Book, User, Library } = require('../models')
+const { hashPassword } = require('../Utils')
 
 const getBookAdmin = async (bookId, bring, onlyDeleted) => {
   let whereCondition = {}
@@ -150,10 +151,153 @@ const restoreUser = async (userId) => {
     return { success: false, error: error.message }
   }
 }
+// NOTA: Un super ADMIN puede editar un usuario y cambar roles
+const adminUpdatingUser = async (userId, newData, user) => {
+  const { newPassword, currentPasswordAdmin } = newData
+  // NOTA: El admin inicial no puede cambiar su rol, siempre serà admin
+  if (userId === '1') {
+    newData.role = 'Admin'
+  }
+  try {
+    // Verificar la existencia del ADMIN antes de la actualización para luego verificar su password
+    const foundAdmin = await User.findOne({
+      where: {
+        user
+      }
+    })
+    if (!foundAdmin) {
+      return { success: false, message: 'Admin not found' }
+    }
+    // Comparar la contraseña proporcionada por el Admin con la contraseña almacenada
+    const isPasswordValid = await hashPassword.validatePassword(
+      currentPasswordAdmin,
+      foundAdmin.password
+    )
+    if (isPasswordValid === false) {
+      return { success: false, message: 'Invalid password' }
+    }
+
+    // Verificar la existencia del usuario antes de la actualización
+    const foundUser = await User.findByPk(userId)
+    if (!foundUser) {
+      return { success: false, message: 'User not found' }
+    }
+
+    if (newPassword) {
+      // Generar el hash de la NUEVA contraseña
+      const hashedNewPassword = await hashPassword.hashPassword(newPassword)
+
+      if (!hashedNewPassword) {
+        return { success: false, message: 'Failed to hash new password' }
+      }
+      const [updatedRowsUserLength] = await User.update({ ...newData, password: hashedNewPassword }, {
+        where: { id: userId }
+      })
+      if (updatedRowsUserLength === 0) {
+        return { success: false, message: 'User to update not found or other problem, eg empty fields' }
+      }
+    } else {
+      const [updatedRowsUserLength] = await User.update({ ...newData }, {
+        where: { id: userId }
+      })
+      if (updatedRowsUserLength === 0) {
+        return { success: false, message: 'User to update not found or other problem, eg empty fields' }
+      }
+    }
+
+    const updatedUser = await User.findByPk(userId)
+    return {
+      success: true,
+      message: 'User updated successfully by Administrator',
+      updatedUser
+    }
+  } catch (error) {
+    console.error(`Error updating  user by Administrator , ${error}`)
+    return { success: false, error }
+  }
+}
+
+const getLibraryAdmin = async (libraryId, bring) => {
+  let whereCondition = {}
+
+  if (bring === 'deleted') {
+    whereCondition.deletedAt = { [Op.ne]: null }
+  } else if (bring === 'no-deleted') {
+    whereCondition.deletedAt = null
+  } else if (bring === 'all') {
+    whereCondition = {}
+  }
+
+  try {
+    if (!libraryId) {
+      // Obtener todos los elementos, incluidos los eliminados, paranoid = false
+      const foundLibrary = await Library.findAll({
+        where: whereCondition,
+        include: {
+          all: true,
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
+        },
+        paranoid: false,
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      })
+      if (foundLibrary.length === 0) {
+        return { success: false, error: 'Library not found' }
+      }
+      return { success: true, library: foundLibrary }
+    }
+
+    const foundLibrary = await Library.findByPk(libraryId, {
+      include: {
+        all: true,
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      },
+      paranoid: false,
+      attributes: { exclude: ['createdAt', 'updatedAt'] }
+    })
+
+    if (!foundLibrary) {
+      return { success: false, error: 'Library not found' }
+    }
+    return { success: true, library: foundLibrary }
+  } catch (error) {
+    console.log(`Error looking for Library, ${error}`)
+    return { success: false, error: error.message }
+  }
+}
+
+const restoreLibrary = async (libraryId) => {
+  try {
+    if (libraryId) {
+      // Recuperar una biblioteca eliminada por su ID
+      const restoredLibrary = await Library.restore({ where: { id: libraryId } })
+
+      if (!restoredLibrary) {
+        return { success: false, message: 'Library not found' }
+      }
+
+      return { success: true, message: 'Library restored successfully' }
+    } else {
+      // Recuperar todas las bibliotecas eliminadas
+      const restoredLibraries = await Library.restore({ where: { deletedAt: { [Op.not]: null } } })
+
+      if (restoredLibraries.length === 0) {
+        return { success: false, message: 'No deleted libraries found' }
+      }
+
+      return { success: true, message: 'All deleted libraries restored successfully' }
+    }
+  } catch (error) {
+    console.log(`Error restoring library: ${error}`)
+    return { success: false, error: error.message }
+  }
+}
 
 module.exports = {
   restoreBook,
   getBookAdmin,
   getUserAdmin,
-  restoreUser
+  restoreUser,
+  adminUpdatingUser,
+  getLibraryAdmin,
+  restoreLibrary
 }

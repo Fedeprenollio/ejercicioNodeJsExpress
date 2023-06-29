@@ -184,72 +184,6 @@ const updateUser = async (userId, newData, role, user) => {
   }
 }
 
-// NOTA: Un ADMIN puede editar un usuario y cambar roles
-const adminUpdatingUser = async (userId, newData, user) => {
-  const { newPassword, currentPasswordAdmin } = newData
-  // NOTA: El admin inicial no puede cambiar su rol, siempre serà admin
-  if (userId === '1') {
-    newData.role = 'Admin'
-  }
-  console.log('LO NUEVO', newData, userId)
-  try {
-    // Verificar la existencia del ADMIN antes de la actualización para luego verificar su password
-    const foundAdmin = await User.findOne({
-      where: {
-        user
-      }
-    })
-    if (!foundAdmin) {
-      return { success: false, message: 'Admin not found' }
-    }
-    // Comparar la contraseña proporcionada por el Admin con la contraseña almacenada
-    const isPasswordValid = await hashPassword.validatePassword(
-      currentPasswordAdmin,
-      foundAdmin.password
-    )
-    if (isPasswordValid === false) {
-      return { success: false, message: 'Invalid password' }
-    }
-
-    // Verificar la existencia del usuario antes de la actualización
-    const foundUser = await User.findByPk(userId)
-    if (!foundUser) {
-      return { success: false, message: 'User not found' }
-    }
-
-    if (newPassword) {
-      // Generar el hash de la NUEVA contraseña
-      const hashedNewPassword = await hashPassword.hashPassword(newPassword)
-
-      if (!hashedNewPassword) {
-        return { success: false, message: 'Failed to hash new password' }
-      }
-      const [updatedRowsUserLength] = await User.update({ ...newData, password: hashedNewPassword }, {
-        where: { id: userId }
-      })
-      if (updatedRowsUserLength === 0) {
-        return { success: false, message: 'User to update not found or other problem, eg empty fields' }
-      }
-    } else {
-      const [updatedRowsUserLength] = await User.update({ ...newData }, {
-        where: { id: userId }
-      })
-      if (updatedRowsUserLength === 0) {
-        return { success: false, message: 'User to update not found or other problem, eg empty fields' }
-      }
-    }
-
-    const updatedUser = await User.findByPk(userId)
-    return {
-      success: true,
-      message: 'User updated successfully by Administrator',
-      updatedUser
-    }
-  } catch (error) {
-    console.error(`Error updating  user by Administrator , ${error}`)
-    return { success: false, error }
-  }
-}
 
 module.exports = {
   createUser,
@@ -257,6 +191,4 @@ module.exports = {
   deleteUser,
   validateUser,
   createUserAtBDInitialization,
-  updateUser,
-  adminUpdatingUser
-}
+  updateUser}

@@ -168,82 +168,10 @@ const addNewBookToLibrary = async (libraryId, newBook) => {
   }
 }
 
-const getLibraryAdmin = async (libraryId, deleted) => {
-  let deletedBoolean
-  if (deleted === 'no') {
-    deletedBoolean = true
-  } else if (deleted === 'yes') {
-    deletedBoolean = false
-  }
-
-  try {
-    if (!libraryId) {
-      // Obtener todos los elementos, incluidos los eliminados, paranoid = false
-      const foundLibraries = await Library.findAll({
-        include: {
-          all: true,
-          attributes: { exclude: ['createdAt', 'updatedAt'] }
-        },
-        paranoid: deletedBoolean,
-        attributes: { exclude: ['createdAt', 'updatedAt'] }
-      })
-      if (foundLibraries.length === 0) {
-        return { success: false, error: 'Library not found' }
-      }
-      return { success: true, library: foundLibraries }
-    }
-    const foundLibrary = await Library.findByPk(libraryId, {
-      include: {
-        all: true,
-        attributes: { exclude: ['createdAt', 'updatedAt'] }
-      },
-      paranoid: deletedBoolean,
-      attributes: { exclude: ['createdAt', 'updatedAt'] }
-    })
-
-    if (!foundLibrary) {
-      return { success: false, error: 'Library not found' }
-    }
-    return { success: true, library: foundLibrary }
-  } catch (error) {
-    console.log(`Error looking for library, ${error}`)
-    return { success: false, error: error.message }
-  }
-}
-
-const restoreLibrary = async (libraryId) => {
-  try {
-    if (libraryId) {
-      // Recuperar una biblioteca eliminada por su ID
-      const restoredLibrary = await Library.restore({ where: { id: libraryId } })
-
-      if (!restoredLibrary) {
-        return { success: false, message: 'Library not found' }
-      }
-
-      return { success: true, message: 'Library restored successfully' }
-    } else {
-      // Recuperar todas las bibliotecas eliminadas
-      const restoredLibraries = await Library.restore({ where: { deletedAt: { [Op.not]: null } } })
-
-      if (restoredLibraries.length === 0) {
-        return { success: false, message: 'No deleted libraries found' }
-      }
-
-      return { success: true, message: 'All deleted libraries restored successfully' }
-    }
-  } catch (error) {
-    console.log(`Error restoring library: ${error}`)
-    return { success: false, error: error.message }
-  }
-}
-
 module.exports = {
   createLibrary,
   getLibrary,
   updateLibrary,
   deleteLibrary,
-  addNewBookToLibrary,
-  getLibraryAdmin,
-  restoreLibrary
+  addNewBookToLibrary
 }

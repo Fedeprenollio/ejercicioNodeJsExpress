@@ -11,8 +11,6 @@ router.post('/', userIsAdmin, userControllers.createUser)
 router.get('/:userId?', userControllers.getUser)
 
 router.put('/:userId', jwtValidMDW, userControllers.updateUser)
-router.put('/admin/:userId', userIsAdmin, userControllers.adminUpdatingUser
-)
 
 router.delete('/:userId?', userIsAdmin, userControllers.deleteUser)
 

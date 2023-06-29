@@ -21,9 +21,6 @@ const updateUser = async (userId, newData, role, user) => {
   return await userProvider.updateUser(userId, newData, role, user)
 }
 
-const adminUpdatingUser = async (userId, newData, user) => {
-  return await userProvider.adminUpdatingUser(userId, newData, user)
-}
 // ● Acciones
 // ○ Login
 
@@ -32,6 +29,5 @@ module.exports = {
   getUser,
   deleteUser,
   validateUser,
-  updateUser,
-  adminUpdatingUser
+  updateUser
 }
