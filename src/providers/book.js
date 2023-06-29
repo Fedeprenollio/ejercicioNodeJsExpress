@@ -137,8 +137,8 @@ const deleteBook = async (bookId) => {
   const foundBook = await Book.findByPk(bookId)
 
   try {
-    foundBook.setLibrary([])
-
+    await foundBook.setLibrary(null)
+    await foundBook.save()
     const rowsDeletedBook = await Book.destroy({
       where: { id: bookId }
     })
