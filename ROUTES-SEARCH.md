@@ -1,6 +1,6 @@
 He creado dos simples ruta para hacer busquedas.
 La diferencia radica en que:
-    - Un USER logueado puede realizar busquedas de LIBROS y LIBRRIAS
+    - Un USER o ADMIN logueado puede realizar busquedas de LIBROS y LIBRRIAS
     - Un SUPER ADMIN puede realizar además búsquedas de usuarios
 
     NOTA: -el req.query "q" puede ser cualquier parametro de busqueda, por ejmplo podemos buscar libros por su nombre, autor, isbn, y las bibliotecas por su nombre, ubicacion, telefono. De un user su email, nombre, apellido, nombre de usuario etc. 

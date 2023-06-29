@@ -328,3 +328,36 @@ USER
 
 1. Actualizar a un usuario o administrador, tanto su informacion como su rol, o proveerle una nueva constraseña en caso de olvido (Luego el usuario deberia cambiarla nuevamente por su seguridad)
     PUT http://localhost:3002/admin/user/:userId **(SUPER-ADMIN)**
+
+
+
+## SEARCH ITEMS    
+1. Buscar entre los libros y librerias (Unicamente los User y Admin)<hr>
+    NOTA: NO busca elementos eliminados <hr>
+   GET http://localhost:3002/search?q=el prin   **(AUTH / ADMIN)** 
+                Se retorna un objeto con los resultados de libros, librerias:
+
+                                ```
+                            {
+                                "success": true,
+                                "result": {
+                                    "library": [],
+                                    "book": []
+                                          }
+                            }
+                            ```
+
+2. Buscar entre los libros y librerias y ademas entre los usuarios(Unicamente los User y Admin) **(AUTH / ADMIN)**
+    NOTA: SI encuentra elementos eliminados
+   GET http://localhost:3002/search?q=el princ **(SUPER-ADMIN)**
+
+                                            ```
+                            {
+                                "success": true,
+                                "result": {
+                                    "library": [],
+                                    "book": [],
+                                    "user": []
+                                            }
+                            }
+                                    ```
