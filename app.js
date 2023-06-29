@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const PORT = 3002
 
-const { libraryRouter, bookRouter, userRouter, authRouter, adminRouter } = require('./src/routes')
+const { libraryRouter, bookRouter, userRouter, authRouter, adminRouter, searchRouter } = require('./src/routes')
 
 const { initializeDB } = require('./src/config/db-config')
 const { userProvider } = require('./src/providers')
@@ -29,6 +29,7 @@ app.use('/library', libraryRouter)
 app.use('/book', bookRouter)
 app.use('/user', userRouter)
 app.use('/login', authRouter)
+app.use('/search', searchRouter)
 
 app.use(errorHandler)
 app.listen(PORT, async (err) => {

@@ -21,8 +21,8 @@ const Book = sequelize.define(
       autoIncrement: true
     },
     isbn: {
-      type: DataTypes.INTEGER,
-      unique: true
+      type: DataTypes.INTEGER
+      // unique: true
     },
     title: {
       type: DataTypes.STRING,
