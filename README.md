@@ -362,7 +362,7 @@ LIBRARY
     NOTA: la query bring es para traer o no las librerias eliminadas, <br>
     1. bring= **all** setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
     2. bring= **no-deleted** ignora los elementos eliminados
-    3. bring= **deleted** trae solamente los resultados eliminados
+    3. bring= **deleted** trae solamente los resultados eliminados <br>
     METHOD: GET
 
                 http://localhost:3002/admin/library?bring=deleted 
@@ -379,7 +379,7 @@ BOOK
         NOTA: la query bring es para traer o no las librerias eliminadas,                
         bring= **all** setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
         bring= **no-deleted** ignora los elementos eliminados
-        bring= **deleted** trae solamente los resultados eliminados
+        bring= **deleted** trae solamente los resultados eliminados <br>
         METHOD: GET
 
                 http://localhost:3002/admin/book?bring=deleted 
@@ -397,7 +397,7 @@ USER
         NOTA: la query bring es para traer o no las librerias eliminadas, 
         bring= **all** setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
         bring= **no-deleted** ignora los elementos eliminados
-        bring= **deleted** trae solamente los resultados eliminados
+        bring= **deleted** trae solamente los resultados eliminados <br>
         METHOD: GET
 
                 http://localhost:3002/admin/user?bring=deleted 
