@@ -450,7 +450,7 @@ USER
 ## UPDATE USER BY SUPER-ADMIN
 
 1. Actualizar a un usuario o administrador, tanto su informacion como su rol, o proveerle una nueva constraseña en caso de olvido (Luego el usuario deberia cambiarla nuevamente por su seguridad)  **(SUPER-ADMIN)**
-    NOTA: El SUPER-ADMIN no puede cambiarse de role (Tampoco eliminarse a si mismo ni por nadie)
+    NOTA: El SUPER-ADMIN no puede cambiarse de role (Tampoco eliminarse a si mismo ni por nadie) <br>
     METHOD: PUT
 
                 http://localhost:3002/admin/user/:userId
@@ -471,9 +471,9 @@ USER
 
 
 ## SEARCH ITEMS    
-1. Buscar entre los libros y librerias (Unicamente los User y Admin)<hr>
-    NOTA: NO busca elementos eliminados  **(AUTH / ADMIN)**  <hr>
-    Se retorna un objeto con los resultados de libros, librerias:
+1. Buscar entre los libros y librerias (Unicamente los User y Admin)<br>
+    NOTA: NO busca elementos eliminados  **(AUTH / ADMIN)**  <br>
+    Se retorna un objeto con los resultados de libros, librerias: <br>
     METHOD: GET
 
                 http://localhost:3002/search?q=el prin  
@@ -490,9 +490,9 @@ USER
     }
     ```
 
-2. Buscar entre los libros y librerias y ademas entre los usuarios **(SUPER-ADMIN)**
-    NOTA: SI encuentra elementos eliminados
-    Se retorna un objeto con los resultados de libros, librerias y usuarios:
+2. Buscar entre los libros y librerias y ademas entre los usuarios **(SUPER-ADMIN)** <br>
+    NOTA: SI encuentra elementos eliminados <br>
+    Se retorna un objeto con los resultados de libros, librerias y usuarios: <br>
     METHOD: GET
 
                 http://localhost:3002/search?q=el princ 
