@@ -43,9 +43,7 @@ const Library = sequelize.define('Libraries', {
 
 )
 
-Library.hasMany(Book, { onDelete: 'CASCADE' }) // Una librería puede tener muchos libros
-Book.belongsTo(Library, {
-  onDelete: 'CASCADE'
-}) // Un libro pertenece a una librería
+Library.hasMany(Book) // Una librería puede tener muchos libros
+Book.belongsTo(Library) // Un libro pertenece a una librería
 
 module.exports = Library
