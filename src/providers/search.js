@@ -47,7 +47,8 @@ const getSearchAdmin = async (search) => {
           { location: { [Op.like]: `%${search}%` } },
           { phone: { [Op.like]: `%${search}%` } }
         ]
-      }
+      },
+      paranoid: false
     }
     )
     result.library = libraryFound
@@ -61,7 +62,9 @@ const getSearchAdmin = async (search) => {
           { year: { [Op.like]: `%${search}%` } }
 
         ]
-      }
+      },
+      paranoid: false
+
     }
     )
     result.book = bookFound
@@ -76,7 +79,9 @@ const getSearchAdmin = async (search) => {
           { role: { [Op.like]: `%${search}%` } }
 
         ]
-      }
+      },
+      paranoid: false
+
     }
     )
     result.user = userFound

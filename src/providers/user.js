@@ -54,21 +54,30 @@ const getUser = async (userId) => {
 }
 
 const deleteUser = async (userId) => {
+  if (userId === '1') {
+    return { message: false, error: 'Cannot delete user ID = 1' }
+  }
   try {
+    const userToDelete = User.findByPk(userId)
+
+    if (!userToDelete) {
+      return { success: false, error: 'User not found' }
+    }
+
     const rowsDeletedBook = await User.destroy({
       where: { id: userId }
     })
 
     if (rowsDeletedBook === 0) {
-      return { success: false, message: 'Book to delete not found' }
+      return { success: false, message: 'No user can be deleted' }
     }
 
     return {
       success: true,
-      message: `deleted book with id ${userId}:  successfully`
+      message: `deleted User with id ${userId}:  successfully`
     }
   } catch (error) {
-    console.log(`Error deleting  library, ${error}`)
+    console.log(`Error deleting  User, ${error}`)
     return { success: false, error: error.message }
   }
 }
