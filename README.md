@@ -10,14 +10,30 @@ Este es un proyecto de Node.js que utiliza Express y Sequelize para crear una ap
 - NPM (versión 9.6.3)
 
 ## Instalación
--npm run dev
+1. Ejecuta el siguiente comando para instalar las dependencias: <br>
+
+        npm install
+
+
+2. Asegúrate de configurar correctamente las variables de entorno.
+
+        En éste caso tengo todo hardcodeado, pues no hay peligro de codigo expuesto
+
+3. Inicia la aplicación ejecutando el siguiente comando:
+
+        npm start
+
+    Esto iniciará la aplicación y estará disponible en [http://localhost:3002]
+
+
+
 
 ## Estructura de Archivos
 
 - `index.js`: Punto de entrada de la aplicación.
 - `app.js`: Configuración principal de la aplicación Express.
 - `routes/`: Carpeta que contiene las definiciones de las rutas de la aplicación.
-- `controllers/`: Carpeta que contiene archivos que definen las funciones que se ejecutarán cuando se solicita una ruta específica.
+- `controllers/`: Carpeta que contiene archivos que definen las funciones que se ejecutarán cuando se solicita una ruta específica con la logica HTTP.
 - `services/`: Carpeta que contiene archivos que encapsulan la ***lógica de negocio*** de la aplicación, proporcionando una abstracción de alto nivel de las operaciones realizadas por los controladores y otros componentes de la aplicación.
 - `providers/`: Carpeta que contiene archivos que definen proveedores de servicios que pueden ser inyectados en diferentes componentes de la aplicación, se utilizan para configurar y crear instancias de otros objetos de la aplicación, como bases de datos, bibliotecas de terceros, servicios web, y otros componentes que la aplicación necesita para funcionar.
 - `models/`: Carpeta que contiene las definiciones de los modelos de la base de datos utilizando Sequelize.
@@ -34,7 +50,10 @@ Empezando por la creacion de una biblioteca nueva lo pasos son:
    2. En ese mismo archivo se importa express y se crea un router el cual luego se exporta.
    3. Importamos controllers y middlewares necesarios que serán necesarios
    4. Creamos la ruta con su metodo, en este caso:
-        - router.post('/', jwtValidMDW, libraryController.createLibrary).
+
+        ```javascript
+            router.post('/', jwtValidMDW, libraryController.createLibrary).
+        ```
    5. En el mismo directorio creamos el archivo index.js el cual nos proveera un indice de todas los routers que tendremos disponibles para exporar.
 
     DIRECTORIO CONTROLLERS
@@ -46,8 +65,8 @@ Empezando por la creacion de una biblioteca nueva lo pasos son:
     DIRECTORIO SERVICES
    1. En la carpeta service/, creamos un archivo libraryService.js para  creación de una biblioteca.
     De ésta manera separamos  ***logica*** de negocio de la ***lógica*** del controller.
-    El resultado de o. son controladores simples y limpios centrados unicamente en la gestion de las request y response  y nuestra logica de negocio puede estar en diferentes servicios, tambìen muy limpios y claros.
-     - Por ejemplo en mi caso
+    El resultado de esto son controladores simples y limpios centrados unicamente en la gestion de las request y response  y nuestra logica de negocio puede estar en diferentes servicios, tambìen muy limpios y claros. <br>
+        Por ejemplo en mi caso
        ``` javascript
             const createLibrary = async (library) => {
              return await libraryProvider.createLibrary(library)
@@ -74,7 +93,7 @@ Empezando por la creacion de una biblioteca nueva lo pasos son:
 
 
     DIRECTORIO UTILS
-   1. La carpeta Utils/  contiene *lógica*  que puede ser usada en cualquier parte de la aplicación y no tiene nada que ver con la *lògica de negocio*. En éste trabajo tengo dos archivos en Untils, uno para generacion del encriptado y comparacion de contraseñas. Otro para la de la generacion del token
+   1. La carpeta Utils/  contiene *lógica*  que puede ser usada en cualquier parte de la aplicación y no tiene nada que ver con la *lògica de negocio*. En éste trabajo tengo dos archivos en Untils, uno para generacion del encriptado y comparacion de contraseñas. Otro para la  generacion del token
    2. Nuevamente tengo un index para poder gestionar todos las funciones *"utiles"*
    
 
@@ -95,6 +114,7 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 ### ***LIBRARIES***.
 
 1. Crear librería **(AUTH)** <br>
+
             POST http://localhost:3002/library
 
             BODY:
@@ -106,15 +126,18 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
             }
             ```
 2.  Obtener una librería <br>
-        GET http://localhost:3002/library/:librayID
+
+            GET http://localhost:3002/library/:librayID
 
 3. Obtener todas las librerías <br>
-        GET http://localhost:3002/library
+
+            GET http://localhost:3002/library
 
 4. Modificar una librería **(AUTH)** <br>
-        PUT http://localhost:3002/library/:libraryID <br>
-        NOTA:* Se le puede modificar unicamente alguno de los atributos NAME, LOCATION, PHONE, o TODOS
-             * También puede recibir libros o removerlos mediante el uso de un array de bookIDs en la propiedad  *receiveBooks* o *deleteBooks*
+
+            PUT http://localhost:3002/library/:libraryID <br>
+            NOTA:* Se le puede modificar unicamente alguno de los atributos NAME, LOCATION, PHONE, o TODOS
+                 * También puede recibir libros o removerlos mediante el uso de un array de bookIDs en la propiedad  *receiveBooks* o *deleteBooks*
 
             BODY:
 
@@ -130,12 +153,14 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 
     
 5. Eliminar una librería (**) **(AUTH)** <br>
-        DELETE http://localhost:3002/library/:libraryID
+
+                DELETE http://localhost:3002/library/:libraryID
 
 6. Agregar un libro nuevo (*) **(AUTH)** <br>
         Haciendo que la librería tenga un método para agregar un libro nuevo <br>
         NOTA: En esta ruta se puede crear un libro nuevo con sus atributos y mediante un req.params se asocia inmediatamente  a la libreria con el id indicado <br>
-        POST http://localhost:3002/library/:libraryID/newBook    <br>
+
+                POST http://localhost:3002/library/:libraryID/newBook    <br>
 
                 BODY:
 
@@ -154,7 +179,8 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 1. Crear libro (*) **(AUTH)** <br>
             ● Crear un libro directamente con /book y enviar el id de la librería <br>
         NOTA: Se puede crear sin asocialer alguna biblioteca, o se le puede agregar alguna mediante el atributo addToLibraryId <br>
-        POST http://localhost:3002/book
+
+            POST http://localhost:3002/book
 
                 BODY:
                 ```
@@ -167,14 +193,17 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
                     }
                 ```
 2. Obtener un libro en particular
-        GET http://localhost:3002/book/:bookID
+
+             GET http://localhost:3002/book/:bookID
 
 3. Obtener todos los libros
-        GET http://localhost:3002/book
+
+             GET http://localhost:3002/book
 
 4. Modificar un libro **(AUTH)** <br>
         NOTA: ademas de editar un libro, se le puede generar una asociacion a una libreria o elimarla a la misma mediante los atributos opcionales addToLibraryId y removeToLibraryId <br>
-        PUT http://localhost:3002/book/1
+
+            PUT http://localhost:3002/book/1
 
                 BODY:
                 ```
@@ -198,7 +227,8 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 
 1. Crear usuarios <br>
         NOTA: Todos los usuarios creados tienen role: "User", por mas que se inyecte una propiedad "role":"Admin" en el body. <br>
-        POST http://localhost:3002/user **(ADMIN)**
+
+            POST http://localhost:3002/user **(ADMIN)**
 
             BODY:
 
@@ -212,34 +242,40 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
             ```
 
 2. Obtener todos los usuarios <br>
-         GET http://localhost:3002/user **(ADMIN)**
+
+            GET http://localhost:3002/user **(ADMIN)**
 
 
 3. Obtener un  usuario <br>
-         GET http://localhost:3002/user/:userID **(ADMIN)**
 
-4. Editar un  usuario   ***por él mismo*** <br> **(AUTH)**
-         NOTA: UN usuario solo se puede modificar a si mismo estando logueado y teniendo la password actual. NO SE PUEDE CAMBIAR SU ROLE ASI MISMO<br>
+            GET http://localhost:3002/user/:userID **(ADMIN)**
+
+4. Editar un  usuario   ***por él mismo*** <br> 
+         NOTA: UN usuario solo se puede modificar a si mismo estando logueado y teniendo la password actual. NO SE PUEDE CAMBIAR SU ROLE ASI MISMO, SOLO LO HACE EL SOPER-ADMIN<br>
          NOTA: TODAS las propiedades del body son opcionales, salvo "currentPassword" que es obligario<br>
-        PUT http://localhost:3002/user/:userId (AUTH)
-        Para modificar un usuario se requiere el password actual
-        Un usuario User solo se puede modificar a si mismo
+
+            PUT http://localhost:3002/user/:userId **(AUTH)** <br>
+
+        Para modificar un usuario se requiere el password actual <br>
+        Un usuario User solo se puede modificar a si mismo, no a otros.
 
             BODY:
-            ```
-                {   "currentPassword":"fede",   ---->Se requiere tener la password acual, en caso de olvido, perdile al SUPER-ADMIN la modificacion (VER RUTAS NO PEDIDAS)
-                    "user":"riquelme",   //Unique
-                    "firstName": "fede",
-                    "lastName":"prenollio",
-                    "email":"fede22q2s@hot.com",  //Unique
-                    "newPassword":"fede33"
-                }
-            ```
+
+            {   "currentPassword":"fede",   ---->Se requiere tener la password acual, en caso de olvido, perdile al SUPER-ADMIN la modificacion (VER RUTAS NO PEDIDAS)
+                "user":"riquelme",   //Unique
+                "firstName": "fede",
+                "lastName":"prenollio",
+                "email":"fede22q2s@hot.com",  //Unique
+                "newPassword":"fede33"
+            }
+
 
 5. Elimnar un  usuario (ADMIN) <br>
+
          DELETE http://localhost:3002/user/:userId   **(ADMIN)**
 
 6. Login <br>
+
          POST http://localhost:3002/login
 
          BODY:
@@ -262,7 +298,9 @@ Solo las pueden hacer un usuario ADMIN o SUPER-ADMIN
 
 LIBRARY
 1. Obetener todas las librerias, aun las deleteadas <br>
-     GET   http://localhost:3002/admin/library?bring=deleted  **(ADMIN**) <br>
+
+             GET   http://localhost:3002/admin/library?bring=deleted  **(ADMIN**) <br>
+
     NOTA: la query bring es para traer o no las librerias eliminadas, <br>
     1. bring=all setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
     2. bring=no-deleted ignora los elementos eliminados
@@ -270,74 +308,105 @@ LIBRARY
 
 
 2. Obetener una libreria en particular, incluyendola si està eliminada o no **(ADMIN)**
-    GET    http://localhost:3002/admin/library/:idLibrary
 
+            GET    http://localhost:3002/admin/library/:idLibrary
 
 BOOK
 1. Obetener todas los libros, aun las deleteadas
-     GET   http://localhost:3002/admin/book?bring=deleted **(ADMIN)** <br>
-        NOTA: la query bring es para traer o no las librerias eliminadas, 
+
+             GET   http://localhost:3002/admin/book?bring=deleted **(ADMIN)** <br>
+
+        NOTA: la query bring es para traer o no las librerias eliminadas,                
         bring=all setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
         bring=no-deleted ignora los elementos eliminados
         bring=deleted trae solamente los resultados eliminados
 
 2. Obetener un libro en particular, incluyendola si està eliminada o no <br>
-    GET    http://localhost:3002/admin/book/:idBook  **(ADMIN)**
+
+            GET    http://localhost:3002/admin/book/:idBook  **(ADMIN)**
+
 
 
 USER
 1. Obetener todos los user, aun las deleteadas <br>
-     GET   http://localhost:3002/admin/user?bring=deleted **(ADMIN)**
+
+             GET   http://localhost:3002/admin/user?bring=deleted **(ADMIN)**
+
         NOTA: la query bring es para traer o no las librerias eliminadas, 
         bring=all setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
         bring=no-deleted ignora los elementos eliminados
         bring=deleted trae solamente los resultados eliminados
 
+2. Obetener un user en particular, incluyendola si està eliminada o no <br>
 
-    *Obetener un user en particular, incluyendola si està eliminada o no <br>
-    GET    http://localhost:3002/admin/user/:idUser **(ADMIN)**
+            GET    http://localhost:3002/admin/user/:idUser **(ADMIN)**
+
 
    
 
 ## RECOVER DELETED ITEMS (only the SUPER ADMIN can do it )
 
 LIBRARY
-1. Recuperar una libreria
-    PUT http://localhost:3002/admin/library/restore/:libraryId **(SUPER-ADMIN)**
+1. Recuperar una libreria  <br>
 
-2. Recuperar todas las librerias
-    PUT http://localhost:3002/admin/library/restore **(SUPER-ADMIN)**
+            PUT http://localhost:3002/admin/library/restore/:libraryId **(SUPER-ADMIN)**
+
+2. Recuperar todas las librerias  <br>
+
+            PUT http://localhost:3002/admin/library/restore **(SUPER-ADMIN)**
 
 
 BOOK
-1. Recuperar un libro en particular
-    PUT http://localhost:3002/admin/book/restore/:bookID **(SUPER-ADMIN)**
+1. Recuperar un libro en particular  <br>
 
-2. Recuperar todos los libros
-    PUT http://localhost:3002/admin/book/restore **(SUPER-ADMIN)**
+            PUT http://localhost:3002/admin/book/restore/:bookID **(SUPER-ADMIN)**
+
+2. Recuperar todos los libros  <br>
+
+           PUT http://localhost:3002/admin/book/restore **(SUPER-ADMIN)**
 
 
 USER
-1. Recuperar un user en particular
-    PUT http://localhost:3002/admin/user/restore/:userId  **(SUPER-ADMIN)**
+1. Recuperar un user en particular <br>
 
-2. Recuperar un user en particular
-    PUT http://localhost:3002/admin/user/restore/:userId **(SUPER-ADMIN)**
+            PUT http://localhost:3002/admin/user/restore/:userId  **(SUPER-ADMIN)**
+
+2. Recuperar un user en particular <br>
+
+            PUT http://localhost:3002/admin/user/restore/:userId **(SUPER-ADMIN)**
 
 ## UPDATE USER BY SUPER-ADMIN
 
 1. Actualizar a un usuario o administrador, tanto su informacion como su rol, o proveerle una nueva constraseña en caso de olvido (Luego el usuario deberia cambiarla nuevamente por su seguridad)
-    PUT http://localhost:3002/admin/user/:userId **(SUPER-ADMIN)**
+
+            PUT http://localhost:3002/admin/user/:userId **(SUPER-ADMIN)**
+
+    NOTA: El SUPER-ADMIN no puede cambiarse de role (Tampoco eliminarse a si mismo ni por nadie)
+
+    BODY:
+
+            ```
+                {   "currentPasswordAdmin":"fede",   ---->Se requiere tener la password acual del superAdmin.
+                    "user":"riquelme",   //Unique
+                    "firstName": "fede",
+                    "lastName":"prenollio",
+                    "email":"fede22q2s@hot.com",  //Unique
+                    "newPassword":"fede33" ,   ------> El SUPER-ADMIN puede dar nuevas contraseñas
+                    "role": "Admin"            --------> Los unicos valores posibles son "Admin" o "User"
+                }
+            ```
 
 
 
 ## SEARCH ITEMS    
 1. Buscar entre los libros y librerias (Unicamente los User y Admin)<hr>
     NOTA: NO busca elementos eliminados <hr>
-   GET http://localhost:3002/search?q=el prin   **(AUTH / ADMIN)** 
-                Se retorna un objeto con los resultados de libros, librerias:
 
-                                ```
+            GET http://localhost:3002/search?q=el prin   **(AUTH / ADMIN)** 
+
+    Se retorna un objeto con los resultados de libros, librerias:
+
+                              
                             {
                                 "success": true,
                                 "result": {
@@ -345,19 +414,22 @@ USER
                                     "book": []
                                           }
                             }
-                            ```
+                      
 
-2. Buscar entre los libros y librerias y ademas entre los usuarios(Unicamente los User y Admin) **(AUTH / ADMIN)**
+2. Buscar entre los libros y librerias y ademas entre los usuarios
     NOTA: SI encuentra elementos eliminados
-   GET http://localhost:3002/search?q=el princ **(SUPER-ADMIN)**
 
-                                            ```
-                            {
-                                "success": true,
-                                "result": {
-                                    "library": [],
-                                    "book": [],
-                                    "user": []
-                                            }
-                            }
-                                    ```
+            GET http://localhost:3002/search?q=el princ **(SUPER-ADMIN)**
+
+     Se retorna un objeto con los resultados de libros, librerias y usuarios:
+
+                               {
+                            "success": true,
+                            "result": {
+                                "library": [],
+                                "book": [],
+                                "user": []
+                                        }
+                        }
+
+# Dependencias
