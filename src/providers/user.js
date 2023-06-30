@@ -120,8 +120,8 @@ const createUserAtBDInitialization = async () => {
     where: { user: 'admin' },
     defaults: {
       user: 'admin',
-      firstName: 'firstName ',
-      lastName: 'lastName',
+      firstName: 'Im The Super-Admin ',
+      lastName: 'Perez',
       password: hashedPassword,
       email: 'admin@admin.com',
       role: 'Admin'

@@ -2,7 +2,26 @@
 
 # API LIBRARY-BOOK-USER - NODE.JS
 
+## Resumen
+
 Este es un proyecto de Node.js que utiliza Express y Sequelize para crear una aplicación web. La aplicación utiliza JWT (JSON Web Tokens) para autenticación y bcrypt para el cifrado de contraseñas. También se incluyen algunas herramientas de desarrollo como Nodemon y ESLint estandarizar el codigo.
+
+
+
+## Dependencias
+###  De desarrollo:
+
+- bcrypt: Se utiliza para el cifrado de contraseñas y la verificación de contraseñas cifradas en aplicaciones web.
+- express: Es un marco de aplicación web para Node.js que simplifica el desarrollo de API y aplicaciones web.
+- jsonwebtoken: Permite la generación y verificación de tokens JWT (JSON Web Tokens) para la autenticación y autorización en aplicaciones web.
+- passport: Es un middleware de autenticación para Node.js que proporciona estrategias de autenticación flexibles y extensibles.
+- passport-jwt: Una estrategia de autenticación para Passport que utiliza tokens JWT para autenticar las solicitudes entrantes.
+- sequelize: Un ORM (Object-Relational Mapping) de Node.js que facilita la interacción con la base de datos SQL mediante la representación de las tablas de la base de datos como modelos de objetos.
+- sqlite3: Un controlador de base de datos SQLite para Node.js que permite interactuar con bases de datos SQLite desde una aplicación Node.js.
+
+### De Producción:
+- eslint: Una herramienta de linting que ayuda a mantener un código JavaScript limpio y coherente, siguiendo reglas y convenciones predefinidas o personalizadas.
+- nodemon: Una utilidad que monitoriza los cambios en los archivos de la aplicación y reinicia automáticamente el servidor Node.js cuando se detectan cambios. Es útil durante el desarrollo para agilizar el ciclo de desarrollo y evitar tener que reiniciar manualmente el servidor cada vez que se realizan cambios en el código.
 
 ## Requisitos
 
@@ -39,7 +58,7 @@ Este es un proyecto de Node.js que utiliza Express y Sequelize para crear una ap
 - `models/`: Carpeta que contiene las definiciones de los modelos de la base de datos utilizando Sequelize.
 - `middlewares/`: Carpeta que contiene los middlewares utilizados en la aplicación.
 - `config/`: Carpeta que contiene archivos de configuración de la base de datos.
-- `Utils/`: Carpeta que contiene archivos con funciones que se utilizan en diferentes directorios.
+- `Utils/`: Carpeta que contiene archivos con funciones que se utilizan en diferentes directorios y no llevan logica de negocios.
 
 ## Descripción del proceso de desarrollo.
 Voy a describir el proceso de desarrollo de algunas rutas.
@@ -97,8 +116,27 @@ Empezando por la creacion de una biblioteca nueva lo pasos son:
    2. Nuevamente tengo un index para poder gestionar todos las funciones *"utiles"*
    
 
+## Uso
+Al inicializar la base de datos se creará un usuario con el rango mas alto con id=1
 
+```javascript
 
+const SuperAdmin =  {
+user: 'admin',
+firstName: 'Im The Super-Admin ',
+lastName: 'Perez',
+password: "admin",
+email: 'admin@admin.com',
+role: 'Admin'
+}
+
+```
+Luego, podras tambien, mediante las diferentes rutas y segun el rango de permisos de los diferentes ususarios
+- Crear nuevos usuarios, editarlos, eliminiarlos, recuperarlos
+- Crear nuevas librerias, editarlas, eliminarlas, recupeararlas, asignale libros y sacarselos
+- Crear nuevos libros, editarlos, eliminarlos, recupearlos, asignarle una biblioteca y removerlo de ella
+- Realizar busqueda de libros, librerias y usuarios
+- Filtrar por elementos eliminados, no eliminados o verlos todos juntos
 # Rutas generales
 
 Las he dividido en dos grupos, por un lado las que fueron pedidas  en el trabajo pràctico, en en segundo lugar... ***Francia*** 😄 . Hablando enserio,en segundo lugar rutas que vi interesante realizar 
@@ -116,15 +154,16 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 1. Crear librería **(AUTH)** <br>
 
             POST http://localhost:3002/library
+            
+    ```javascript
+    //BODY:
+    {
+    "name":"Biblioteca velez",
+    "location":"Av colon 1234",  //Unique
+    "phone":"351333333"
+    }
+    ```
 
-            BODY:
-            ```javascript
-            {
-                "name":"Biblioteca velez",
-                "location":"Av colon 1234",  //Unique
-                "phone":"351333333"
-            }
-            ```
 2.  Obtener una librería <br>
 
             GET http://localhost:3002/library/:librayID
@@ -139,19 +178,19 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
             NOTA:* Se le puede modificar unicamente alguno de los atributos NAME, LOCATION, PHONE, o TODOS
                  * También puede recibir libros o removerlos mediante el uso de un array de bookIDs en la propiedad  *receiveBooks* o *deleteBooks*
 
-            BODY:
 
-            ```
-            {
-                "name":"Biblioteca Velez Sarfield sucursal 1",      ----> opcional
-                "location":"Av Velez Sarfield 1482",        ----> opcional
-                "phone":"351333333",            ----> opcional
-                "receiveBooks": [1,2,3,4]     ----> opcional
-                "deleteBooks":[1,2,3,4,5,6]   ----> opcional
-            }
-            ```
-
+    ```javascript
+    //BODY:
+    {
+    "name":"Biblioteca Velez Sarfield sucursal 1",      //----> opcional
+    "location":"Av Velez Sarfield 1482",                //----> opcional
+    "phone":"351333333",                                //----> opcional
+    "receiveBooks": [1,2,3,4]                           //----> opcional
+    "deleteBooks":[1,2,3,4,5,6]                         //----> opcional
+    }
+    ```
     
+
 5. Eliminar una librería (**) **(AUTH)** <br>
 
                 DELETE http://localhost:3002/library/:libraryID
@@ -162,17 +201,17 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 
                 POST http://localhost:3002/library/:libraryID/newBook    <br>
 
-                BODY:
 
-                ```    
-                {
-                    "isbn":37,
-                    "title":"libro economicoe??",
-                    "author":"Perez",
-                    "year":"2001"
-                
-                    } 
-                    ```
+    ```javascript 
+    // BODY:
+    {
+    "isbn":37,
+    "title":"libro economicoe??",
+    "author":"Perez",
+    "year":"2001"
+
+    } 
+    ```
                     
 ### **BOOKS**
 
@@ -182,16 +221,17 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 
             POST http://localhost:3002/book
 
-                BODY:
-                ```
-                    {
-                    "isbn":3332,
-                    "title":"terminator 21",
-                    "author":"Perez",
-                    "year":"2001",
-                    "addToLibraryId": 2        
-                    }
-                ```
+                
+    ```javascript
+    //BODY:
+    {
+    "isbn":3332,
+    "title":"terminator 21",
+    "author":"Perez",
+    "year":"2001",
+    "addToLibraryId": 2        
+    }
+    ```
 2. Obtener un libro en particular
 
              GET http://localhost:3002/book/:bookID
@@ -205,17 +245,18 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 
             PUT http://localhost:3002/book/1
 
-                BODY:
-                ```
-                        {
-                            "isbn": 1234,                   --->opcional
-                            "title":"El rengo 22",          --->opcional
-                            "author":"Juan",                --->opcional
-                            "year":"2001",                  --->opcional
-                            "addToLibraryId": 1             --->opcional
-                            "removeToLibraryId": 1          --->opcional
-                        }
-                ```
+               
+    ```javascript
+    // BODY:
+    {
+    "isbn": 1234,                   --->opcional
+    "title":"El rengo 22",          --->opcional
+    "author":"Juan",                --->opcional
+    "year":"2001",                  --->opcional
+    "addToLibraryId": 1             --->opcional
+    "removeToLibraryId": 1          --->opcional
+    }
+    ```
 
 
 5. Eliminar un libro (**) **(AUTH)** <br>
@@ -230,16 +271,16 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 
             POST http://localhost:3002/user **(ADMIN)**
 
-            BODY:
-
-            ```
-                {   "user":"admin2",   //Unique
-                    "firstName": "enriqe",
-                    "lastName":"diaz",
-                    "email":"fede222s@hot.com",         //Unique
-                    "password":"fede"
-                }
-            ```
+            
+    ```javascript
+    //BODY:
+    {   "user":"admin2",   //Unique
+    "firstName": "enriqe",
+    "lastName":"diaz",
+    "email":"fede222s@hot.com",         //Unique
+    "password":"fede"
+    }
+    ```
 
 2. Obtener todos los usuarios <br>
 
@@ -259,15 +300,17 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
         Para modificar un usuario se requiere el password actual <br>
         Un usuario User solo se puede modificar a si mismo, no a otros.
 
-            BODY:
 
-            {   "currentPassword":"fede",   ---->Se requiere tener la password acual, en caso de olvido, perdile al SUPER-ADMIN la modificacion (VER RUTAS NO PEDIDAS)
-                "user":"riquelme",   //Unique
-                "firstName": "fede",
-                "lastName":"prenollio",
-                "email":"fede22q2s@hot.com",  //Unique
-                "newPassword":"fede33"
-            }
+    ```javascript
+    //BODY:
+    {   "currentPassword":"fede",   ---->Se requiere tener la password acual, en caso de olvido, perdile al SUPER-ADMIN la modificacion (VER RUTAS NO PEDIDAS)
+    "user":"riquelme",   //Unique
+    "firstName": "fede",
+    "lastName":"prenollio",
+    "email":"fede22q2s@hot.com",  //Unique
+    "newPassword":"fede33"
+    }
+    ```
 
 
 5. Elimnar un  usuario (ADMIN) <br>
@@ -278,13 +321,14 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 
          POST http://localhost:3002/login
 
-         BODY:
-         ```
-              {
-                "user":"admin",
-                "password":"admin"
-              }
-        ```
+
+    ```javascript
+    //BODY:
+    {
+    "user":"admin",
+    "password":"admin"
+    }
+    ```
 
 ## Rutas NO Pediddas por el TP:
 
@@ -383,18 +427,19 @@ USER
 
     NOTA: El SUPER-ADMIN no puede cambiarse de role (Tampoco eliminarse a si mismo ni por nadie)
 
-    BODY:
 
-            ```
-                {   "currentPasswordAdmin":"fede",   ---->Se requiere tener la password acual del superAdmin.
-                    "user":"riquelme",   //Unique
-                    "firstName": "fede",
-                    "lastName":"prenollio",
-                    "email":"fede22q2s@hot.com",  //Unique
-                    "newPassword":"fede33" ,   ------> El SUPER-ADMIN puede dar nuevas contraseñas
-                    "role": "Admin"            --------> Los unicos valores posibles son "Admin" o "User"
-                }
-            ```
+
+    ```javascript
+    //BODY:
+    {   "currentPasswordAdmin":"admin",   ---->Se requiere tener la password acual del superAdmin.
+    "user":"riquelme",   //Unique
+    "firstName": "fede",
+    "lastName":"prenollio",
+    "email":"fede22q2s@hot.com",  //Unique
+    "newPassword":"fede33" ,   ------> El SUPER-ADMIN puede dar nuevas contraseñas
+    "role": "Admin"            --------> Los unicos valores posibles son "Admin" o "User"
+    }
+    ```
 
 
 
@@ -406,15 +451,16 @@ USER
 
     Se retorna un objeto con los resultados de libros, librerias:
 
-                              
-                            {
-                                "success": true,
-                                "result": {
-                                    "library": [],
-                                    "book": []
-                                          }
-                            }
-                      
+    ```javascript
+    //resultado de la busqueda, observe que solo retorna libros o librerias
+    {
+    "success": true,
+    "result": {
+        "library": [],
+        "book": []
+        }
+    }
+    ```
 
 2. Buscar entre los libros y librerias y ademas entre los usuarios
     NOTA: SI encuentra elementos eliminados
@@ -423,13 +469,14 @@ USER
 
      Se retorna un objeto con los resultados de libros, librerias y usuarios:
 
-                               {
-                            "success": true,
-                            "result": {
-                                "library": [],
-                                "book": [],
-                                "user": []
-                                        }
-                        }
-
-# Dependencias
+    ```javascript
+    //Notese que en éste caso tambien nos retorna los resultados de usuarios. Todos los resultados incluye a los eliminados
+    {
+    "success": true,
+    "result": {
+        "library": [],
+        "book": [],
+        "user": []
+        }
+    }
+    ```
