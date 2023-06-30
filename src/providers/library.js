@@ -114,7 +114,7 @@ const updateLibrary = async (libraryId, newData) => {
 }
 
 const deleteLibrary = async (libraryId) => {
-  const t = await sequelize.transaction() // Iniciar la transacción
+  const t = await sequelize.transaction() // Iniciar la transacción para que, en caso de no poder hacer el destroy, las relaciones vuelvan a hacerse
 
   try {
     // Buscar la biblioteca a eliminar

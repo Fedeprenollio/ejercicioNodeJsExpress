@@ -137,6 +137,9 @@ const deleteBook = async (bookId) => {
   const foundBook = await Book.findByPk(bookId)
 
   try {
+    if (!foundBook) {
+      return { success: false, message: 'Book not found' }
+    }
     await foundBook.setLibrary(null)
     await foundBook.save()
     const rowsDeletedBook = await Book.destroy({
@@ -144,12 +147,12 @@ const deleteBook = async (bookId) => {
     })
 
     if (rowsDeletedBook === 0) {
-      return { success: false, message: 'Book to delete not found' }
+      return { success: false, message: 'No book has been removed' }
     }
 
     return {
       success: true,
-      message: `deleted book with id ${bookId}:  successfully`
+      message: `deleted book with id ${bookId}:  Successfully`
     }
   } catch (error) {
     console.log(`Error deleting  library, ${error}`)
