@@ -42,7 +42,7 @@ Este es un proyecto de Node.js que utiliza Express y Sequelize para crear una ap
 
         npm start
 
-    Esto iniciará la aplicación y estará disponible en [http://localhost:3002]
+    Esto iniciará la aplicación y estará disponible en [http://localhost:3002](http://localhost:3002)
 
 
 
