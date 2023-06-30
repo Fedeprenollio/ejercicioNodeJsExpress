@@ -154,7 +154,7 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 1. Crear librería **(AUTH)** <br>
     METHOD: POST
 
-            [http://localhost:3002/library](http://localhost:3002/library)
+            http://localhost:3002/library
             
     ```javascript
     //BODY:
