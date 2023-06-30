@@ -152,31 +152,35 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 ### ***LIBRARIES***.
 
 1. Crear librería **(AUTH)** <br>
+    METHOD: POST
 
-            POST http://localhost:3002/library
+            http://localhost:3002/library
             
     ```javascript
     //BODY:
     {
-    "name":"Biblioteca velez",
-    "location":"Av colon 1234",  //Unique
-    "phone":"351333333"
+    "name":"Biblioteca velez",   //not null
+    "location":"Av colon 1234",  //Unique - not null
+    "phone":"351333333"          //not null - String, pero unicamente numeros recibe
     }
     ```
 
 2.  Obtener una librería <br>
+    METHOD: GET
 
-            GET http://localhost:3002/library/:librayID
+            http://localhost:3002/library/:librayID
 
 3. Obtener todas las librerías <br>
+    METHOD: GET
 
-            GET http://localhost:3002/library
+            http://localhost:3002/library
 
 4. Modificar una librería **(AUTH)** <br>
+    NOTA:* Se le puede modificar unicamente alguno de los atributos NAME, LOCATION, PHONE, o TODOS
+            * También puede recibir libros o removerlos mediante el uso de un array de bookIDs en la propiedad  *receiveBooks* o *deleteBooks*
+    METHOD: PUT
 
-            PUT http://localhost:3002/library/:libraryID <br>
-            NOTA:* Se le puede modificar unicamente alguno de los atributos NAME, LOCATION, PHONE, o TODOS
-                 * También puede recibir libros o removerlos mediante el uso de un array de bookIDs en la propiedad  *receiveBooks* o *deleteBooks*
+            http://localhost:3002/library/:libraryID
 
 
     ```javascript
@@ -192,134 +196,148 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
     
 
 5. Eliminar una librería (**) **(AUTH)** <br>
+   METHOD: DELETE
 
-                DELETE http://localhost:3002/library/:libraryID
+                http://localhost:3002/library/:libraryID
 
 6. Agregar un libro nuevo (*) **(AUTH)** <br>
         Haciendo que la librería tenga un método para agregar un libro nuevo <br>
         NOTA: En esta ruta se puede crear un libro nuevo con sus atributos y mediante un req.params se asocia inmediatamente  a la libreria con el id indicado <br>
+        METHOD: POST
 
-                POST http://localhost:3002/library/:libraryID/newBook    <br>
+                http://localhost:3002/library/:libraryID/newBook
 
 
     ```javascript 
     // BODY:
     {
-    "isbn":37,
-    "title":"libro economicoe??",
-    "author":"Perez",
-    "year":"2001"
+    "isbn":37,                          //not null
+    "title":"libro economicoe??",       //not null
+    "author":"Perez",                   //not null
+    "year":"2001"                       //not null - String pero solo recibe numeros
 
     } 
     ```
                     
+                    
 ### **BOOKS**
 
 1. Crear libro (*) **(AUTH)** <br>
-            ● Crear un libro directamente con /book y enviar el id de la librería <br>
-        NOTA: Se puede crear sin asocialer alguna biblioteca, o se le puede agregar alguna mediante el atributo addToLibraryId <br>
+    ● Crear un libro directamente con /book y enviar el id de la librería <br>
+    NOTA: Se puede crear sin asocialer alguna biblioteca, o se le puede agregar alguna mediante el atributo addToLibraryId <br>
+    METHOD: POST
 
-            POST http://localhost:3002/book
+
+            http://localhost:3002/book
 
                 
     ```javascript
     //BODY:
     {
-    "isbn":3332,
-    "title":"terminator 21",
-    "author":"Perez",
-    "year":"2001",
-    "addToLibraryId": 2        
+    "isbn":3332,                        //----> opcional
+    "title":"terminator 21",            //----> opcional
+    "author":"Perez",                   //----> opcional
+    "year":"2001",                      //----> opcional
+    "addToLibraryId": 2                 //----> opcional
     }
     ```
 2. Obtener un libro en particular
+   METHOD: GET
 
-             GET http://localhost:3002/book/:bookID
+
+             http://localhost:3002/book/:bookID
 
 3. Obtener todos los libros
+   METHOD: GET
 
-             GET http://localhost:3002/book
+             http://localhost:3002/book
 
 4. Modificar un libro **(AUTH)** <br>
-        NOTA: ademas de editar un libro, se le puede generar una asociacion a una libreria o elimarla a la misma mediante los atributos opcionales addToLibraryId y removeToLibraryId <br>
+   NOTA: ademas de editar un libro, se le puede generar una asociacion a una libreria o elimarla a la misma mediante los atributos opcionales addToLibraryId y removeToLibraryId <br>
+   METHOD: PUT
 
-            PUT http://localhost:3002/book/1
+            http://localhost:3002/book/:bookId
 
                
     ```javascript
     // BODY:
     {
-    "isbn": 1234,                   --->opcional
-    "title":"El rengo 22",          --->opcional
-    "author":"Juan",                --->opcional
-    "year":"2001",                  --->opcional
-    "addToLibraryId": 1             --->opcional
-    "removeToLibraryId": 1          --->opcional
+    "isbn": 1234,                   //--->opcional
+    "title":"El rengo 22",          //--->opcional
+    "author":"Juan",                //--->opcional
+    "year":"2001",                  //--->opcional
+    "addToLibraryId": 1             //--->opcional
+    "removeToLibraryId": 1          //--->opcional
     }
     ```
 
 
 5. Eliminar un libro (**) **(AUTH)** <br>
-        DELETE http://localhost:3002/book/:bookID
+   METHOD: DELETE
+
+            http://localhost:3002/book/:bookID
 
     
 ### ***USER***
 
 
-1. Crear usuarios <br>
+1. Crear usuarios **(ADMIN)** <br>
         NOTA: Todos los usuarios creados tienen role: "User", por mas que se inyecte una propiedad "role":"Admin" en el body. <br>
+        METHOD: PUT
 
-            POST http://localhost:3002/user **(ADMIN)**
+            http://localhost:3002/user 
 
             
     ```javascript
     //BODY:
-    {   "user":"admin2",   //Unique
-    "firstName": "enriqe",
-    "lastName":"diaz",
-    "email":"fede222s@hot.com",         //Unique
-    "password":"fede"
+    {   "user":"admin2",                //Unique - Sin espacios - not null
+    "firstName": "enriqe",              // not null
+    "lastName":"diaz",                  // not null
+    "email":"fede222s@hot.com",         //Unique - email valido - not null
+    "password":"fede"                   // not null - sin restricciones para èste trabajo práctico
     }
     ```
 
-2. Obtener todos los usuarios <br>
+2. Obtener todos los usuarios **(ADMIN)** <br>
+   METHOD: GET
 
-            GET http://localhost:3002/user **(ADMIN)**
+            http://localhost:3002/user
 
 
-3. Obtener un  usuario <br>
+3. Obtener un  usuario  **(ADMIN)**<br>
+    METHOD: GET
 
-            GET http://localhost:3002/user/:userID **(ADMIN)**
+            http://localhost:3002/user/:userID
 
-4. Editar un  usuario   ***por él mismo*** <br> 
+4. Editar un  usuario   ***por él mismo*** **(AUTH)**  <br> 
          NOTA: UN usuario solo se puede modificar a si mismo estando logueado y teniendo la password actual. NO SE PUEDE CAMBIAR SU ROLE ASI MISMO, SOLO LO HACE EL SOPER-ADMIN<br>
          NOTA: TODAS las propiedades del body son opcionales, salvo "currentPassword" que es obligario<br>
+         METHOD: PUT
 
-            PUT http://localhost:3002/user/:userId **(AUTH)** <br>
-
-        Para modificar un usuario se requiere el password actual <br>
-        Un usuario User solo se puede modificar a si mismo, no a otros.
+            http://localhost:3002/user/:userId 
 
 
     ```javascript
     //BODY:
     {   "currentPassword":"fede",   ---->Se requiere tener la password acual, en caso de olvido, perdile al SUPER-ADMIN la modificacion (VER RUTAS NO PEDIDAS)
-    "user":"riquelme",   //Unique
-    "firstName": "fede",
-    "lastName":"prenollio",
-    "email":"fede22q2s@hot.com",  //Unique
-    "newPassword":"fede33"
+    "user":"riquelme",              // OPCIONAL
+    "firstName": "fede",            // OPCIONAL
+    "lastName":"prenollio",         // OPCIONAL
+    "email":"fede22q2s@hot.com",    // OPCIONAL
+    "newPassword":"fede33"          // OPCIONAL
     }
     ```
 
 
-5. Elimnar un  usuario (ADMIN) <br>
+5. Elimnar un  usuario **(ADMIN)** <br>
+    METHOD: DELETE
 
-         DELETE http://localhost:3002/user/:userId   **(ADMIN)**
+            http://localhost:3002/user/:userId   
 
 6. Login <br>
+    METHOD: POST
 
-         POST http://localhost:3002/login
+            http://localhost:3002/login
 
 
     ```javascript
@@ -335,109 +353,118 @@ NOTA DE AUTENTICACION/AUTORIZACIÓN:
 ### ***/ADMIN***
 
 Rutas extras, no solicitadas para el trabajo practico. <br>
-Solo las pueden hacer un usuario ADMIN o SUPER-ADMIN
 
 ## OBETENER ITEMS (eliminados incluidos )
 
 
 LIBRARY
-1. Obetener todas las librerias, aun las deleteadas <br>
-
-             GET   http://localhost:3002/admin/library?bring=deleted  **(ADMIN**) <br>
-
+1. Obetener todas las librerias, aun las deleteadas  **(ADMIN**) <br>
     NOTA: la query bring es para traer o no las librerias eliminadas, <br>
     1. bring=all setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
     2. bring=no-deleted ignora los elementos eliminados
     3. bring=deleted trae solamente los resultados eliminados
+    METHOD: GET
+
+                http://localhost:3002/admin/library?bring=deleted 
+
 
 
 2. Obetener una libreria en particular, incluyendola si està eliminada o no **(ADMIN)**
+    METHOD: GET
 
-            GET    http://localhost:3002/admin/library/:idLibrary
+                http://localhost:3002/admin/library/:idLibrary
 
 BOOK
-1. Obetener todas los libros, aun las deleteadas
-
-             GET   http://localhost:3002/admin/book?bring=deleted **(ADMIN)** <br>
-
+1. Obetener todas los libros, aun las deleteadas **(ADMIN)** <br>
         NOTA: la query bring es para traer o no las librerias eliminadas,                
         bring=all setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
         bring=no-deleted ignora los elementos eliminados
         bring=deleted trae solamente los resultados eliminados
+        METHOD: GET
 
-2. Obetener un libro en particular, incluyendola si està eliminada o no <br>
+                http://localhost:3002/admin/book?bring=deleted 
 
-            GET    http://localhost:3002/admin/book/:idBook  **(ADMIN)**
+
+2. Obetener un libro en particular, incluyendola si està eliminada o no  **(ADMIN)** <br>
+        METHOD: GET
+
+                http://localhost:3002/admin/book/:idBook 
 
 
 
 USER
-1. Obetener todos los user, aun las deleteadas <br>
-
-             GET   http://localhost:3002/admin/user?bring=deleted **(ADMIN)**
-
+1. Obetener todos los user, aun las deleteadas **(ADMIN)** <br>
         NOTA: la query bring es para traer o no las librerias eliminadas, 
         bring=all setea la busqueda con un paranoid=false y trae todas, incluidas las elimindas,
         bring=no-deleted ignora los elementos eliminados
         bring=deleted trae solamente los resultados eliminados
+        METHOD: GET
 
-2. Obetener un user en particular, incluyendola si està eliminada o no <br>
+                http://localhost:3002/admin/user?bring=deleted 
 
-            GET    http://localhost:3002/admin/user/:idUser **(ADMIN)**
 
+2. Obetener un user en particular, incluyendola si està eliminada o no **(ADMIN)** <br>
+    METHOD: GET
+
+                http://localhost:3002/admin/user/:idUser 
 
    
 
 ## RECOVER DELETED ITEMS (only the SUPER ADMIN can do it )
 
 LIBRARY
-1. Recuperar una libreria  <br>
+1. Recuperar una libreria  **(SUPER-ADMIN)**  <br>
+    METHOD: PUT
 
-            PUT http://localhost:3002/admin/library/restore/:libraryId **(SUPER-ADMIN)**
+                http://localhost:3002/admin/library/restore/:libraryId
 
-2. Recuperar todas las librerias  <br>
 
-            PUT http://localhost:3002/admin/library/restore **(SUPER-ADMIN)**
+2. Recuperar todas las librerias  **(SUPER-ADMIN)**  <br>
+    METHOD: PUT
+
+            http://localhost:3002/admin/library/restore
 
 
 BOOK
-1. Recuperar un libro en particular  <br>
+1. Recuperar un libro en particular   **(SUPER-ADMIN)** <br>
+    METHOD: PUT
 
-            PUT http://localhost:3002/admin/book/restore/:bookID **(SUPER-ADMIN)**
+            http://localhost:3002/admin/book/restore/:bookID
 
-2. Recuperar todos los libros  <br>
+2. Recuperar todos los libros  **(SUPER-ADMIN)**  <br>
+    METHOD: PUT
 
-           PUT http://localhost:3002/admin/book/restore **(SUPER-ADMIN)**
-
+            http://localhost:3002/admin/book/restore 
 
 USER
-1. Recuperar un user en particular <br>
+1. Recuperar un user en particular  **(SUPER-ADMIN)** <br>
+    METHOD: PUT
 
-            PUT http://localhost:3002/admin/user/restore/:userId  **(SUPER-ADMIN)**
+            http://localhost:3002/admin/user/restore/:userId 
 
-2. Recuperar un user en particular <br>
+2. Recuperar un user en particular  **(SUPER-ADMIN)** <br>
+    METHOD: PUT
 
-            PUT http://localhost:3002/admin/user/restore/:userId **(SUPER-ADMIN)**
+             http://localhost:3002/admin/user/restore/:userId
 
 ## UPDATE USER BY SUPER-ADMIN
 
-1. Actualizar a un usuario o administrador, tanto su informacion como su rol, o proveerle una nueva constraseña en caso de olvido (Luego el usuario deberia cambiarla nuevamente por su seguridad)
-
-            PUT http://localhost:3002/admin/user/:userId **(SUPER-ADMIN)**
-
+1. Actualizar a un usuario o administrador, tanto su informacion como su rol, o proveerle una nueva constraseña en caso de olvido (Luego el usuario deberia cambiarla nuevamente por su seguridad)  **(SUPER-ADMIN)**
     NOTA: El SUPER-ADMIN no puede cambiarse de role (Tampoco eliminarse a si mismo ni por nadie)
+    METHOD: PUT
 
+                http://localhost:3002/admin/user/:userId
 
 
     ```javascript
     //BODY:
     {   "currentPasswordAdmin":"admin",   ---->Se requiere tener la password acual del superAdmin.
-    "user":"riquelme",   //Unique
-    "firstName": "fede",
-    "lastName":"prenollio",
-    "email":"fede22q2s@hot.com",  //Unique
-    "newPassword":"fede33" ,   ------> El SUPER-ADMIN puede dar nuevas contraseñas
-    "role": "Admin"            --------> Los unicos valores posibles son "Admin" o "User"
+    "user":"riquelme",                      // OPCIONAL
+    "firstName": "fede",                    // OPCIONAL
+    "lastName":"prenollio",                 // OPCIONAL
+    "email":"fede22q2s@hot.com",            // OPCIONAL
+    "newPassword":"fede33" ,              ------> El SUPER-ADMIN puede dar nuevas contraseñas
+    "role": "Admin"                         //Los unicos valores posibles son "Admin" o "User"
     }
     ```
 
@@ -445,11 +472,12 @@ USER
 
 ## SEARCH ITEMS    
 1. Buscar entre los libros y librerias (Unicamente los User y Admin)<hr>
-    NOTA: NO busca elementos eliminados <hr>
-
-            GET http://localhost:3002/search?q=el prin   **(AUTH / ADMIN)** 
-
+    NOTA: NO busca elementos eliminados  **(AUTH / ADMIN)**  <hr>
     Se retorna un objeto con los resultados de libros, librerias:
+    METHOD: GET
+
+                http://localhost:3002/search?q=el prin  
+
 
     ```javascript
     //resultado de la busqueda, observe que solo retorna libros o librerias
@@ -462,12 +490,13 @@ USER
     }
     ```
 
-2. Buscar entre los libros y librerias y ademas entre los usuarios
+2. Buscar entre los libros y librerias y ademas entre los usuarios **(SUPER-ADMIN)**
     NOTA: SI encuentra elementos eliminados
+    Se retorna un objeto con los resultados de libros, librerias y usuarios:
+    METHOD: GET
 
-            GET http://localhost:3002/search?q=el princ **(SUPER-ADMIN)**
+                http://localhost:3002/search?q=el princ 
 
-     Se retorna un objeto con los resultados de libros, librerias y usuarios:
 
     ```javascript
     //Notese que en éste caso tambien nos retorna los resultados de usuarios. Todos los resultados incluye a los eliminados
