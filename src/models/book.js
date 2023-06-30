@@ -21,7 +21,8 @@ const Book = sequelize.define(
       autoIncrement: true
     },
     isbn: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false
       // unique: true
     },
     title: {
@@ -34,7 +35,10 @@ const Book = sequelize.define(
     },
     year: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        isNumeric: true
+      }
     }
     // deleted: {
     //   type: DataTypes.BOOLEAN,

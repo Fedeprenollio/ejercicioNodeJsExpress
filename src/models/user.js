@@ -44,10 +44,6 @@ const User = sequelize.define('Users', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  deleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-  },
   role: {
     type: DataTypes.STRING,
     defaultValue: 'User',
